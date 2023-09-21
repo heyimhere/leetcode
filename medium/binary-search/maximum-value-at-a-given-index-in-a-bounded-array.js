@@ -19,4 +19,4 @@ function maxValue(n, index, maxSum) {
 }
 // [2, 3, 2, 1]
 
-console.log('max value', maxValue(4, 2, 6));
+console.log('max value', maxValue(6, 1, 10));
