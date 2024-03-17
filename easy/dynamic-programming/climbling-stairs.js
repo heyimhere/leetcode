@@ -1,0 +1,12 @@
+const number = 3;
+const climbingStairs = function(n, memo) {
+	// code here
+	memo = memo || {};
+	if(memo[n]) return memo[n];
+
+	if(n <= 1) return 1;
+
+	return memo[n] = climbingStairs(n - 1, memo) + climbingStairs(n - 2, memo);
+};
+
+console.log('climbing stairs', climbingStairs(number));
