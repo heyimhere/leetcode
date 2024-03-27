@@ -1,6 +1,5 @@
-const number = 3;
+const number = 88;
 const climbingStairs = function(n, memo) {
-	// code here
 	memo = memo || {};
 	if(memo[n]) return memo[n];
 
