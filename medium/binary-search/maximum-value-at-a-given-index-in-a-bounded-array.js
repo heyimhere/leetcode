@@ -1,4 +1,4 @@
-function maxValue(n, index, maxSum) {
+function maValue(n, index, maxSum) {
   // code here
   let answer = 1;
   let sum = n;

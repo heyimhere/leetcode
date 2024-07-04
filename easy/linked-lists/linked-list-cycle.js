@@ -13,13 +13,10 @@ two.next = three;
 three.next = one;
 
 const hasCycle = function(head) {
-	// code here
 	let fast = head;
 	while(fast && fast.next) {
 		head =  head.next;
 		fast = fast.next.next;
-		console.log('head', head);
-		console.log('fast', fast);
 		if(head === fast) return true;
 	}
 	return false;

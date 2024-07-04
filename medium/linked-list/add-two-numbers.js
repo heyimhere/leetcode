@@ -26,12 +26,10 @@ function ListNode(val) {
 }
 
 function addTwoNumbers(l1, l2) {
-	// code here
 	let list = new ListNode(0);
 	let head = list;
 	let sum = 0;
 	let carry = 0;
-	console.log('l1', l1);
 
 	while(l1 !== null || l2 !== null || sum > 0) {
 		if(l1 !== null) {
