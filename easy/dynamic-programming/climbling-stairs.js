@@ -8,4 +8,6 @@ const climbingStairs = function(n, memo) {
 	return memo[n] = climbingStairs(n - 1, memo) + climbingStairs(n - 2, memo);
 };
 
+// coding interview sample
+
 console.log('climbing stairs', climbingStairs(number));

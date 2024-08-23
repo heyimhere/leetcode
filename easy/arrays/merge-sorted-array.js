@@ -16,4 +16,6 @@ function merge(nums1, m, nums2, n) {
   return nums1;
 }
 
+// coding interview sample
+
 console.log('merge', merge(numbersOne, countOne, numbersTwo, countTwo));

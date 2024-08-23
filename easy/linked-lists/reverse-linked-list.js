@@ -34,13 +34,94 @@ let list = new LinkedList(node1);
 // 	return head;
 // };
 
+// const reverseList = function(node) {
+// 	if(node === null || node.next === null) return node;
+// 	let res =  reverseList(node.next);
+// 	node.next.next = node;
+// 	node.next = null;
+// 	return res;
+// }
+
 const reverseList = function(node) {
 	if(node === null || node.next === null) return node;
-	let res =  reverseList(node.next);
+	let res = reverseList(node.next);
 	node.next.next = node;
 	node.next = null;
 	return res;
 }
 
+const reverseList = function(node) {
+	if(node === null || node.next === null) return node;
+	let res = reverseList(node.next);
+	node.next.next = node;
+	node.next = null;
+	return res;
+}
+
+const reverseList = function(node) {
+	if(node === null || node.next === null) return node;
+	let res = reverseList(node.next);
+	node.next.next = node;
+	node.next = null;
+	return res;
+}
+
+const reverseList = function(node) {
+	if(node === null || node.next === null) return node;
+	let res = reverseList(node.next);
+	node.next.next = node;
+	node.next = null;
+	return res;
+}
+
+const reverseList = function(node) {
+	if(node === null || node.next) return node;
+	let res = reverseList(node.next);
+	node.next.next = node;
+	node.next = null;
+	return res;
+}
+
+const reverseList = function(node) {
+	if(node === null || node.next === null) return node;
+	let res = reverseList(node.next);
+	node.next.next = node;
+	node.next = null;
+	return res;
+}
+
+const reverseList = function(node) {
+	if(node === null || node.next === null) return node; 
+	let res = reverseList(node.next);
+	node.next.next = node;
+	node.next = null;
+	return res;
+}
+
+const reverseList = function(node) {
+	if(node === null || node.next === null) return node;
+	let res = reverseList(node.next);
+	node.next.next = node;
+	node.next = null;
+	return res;
+}
+
+const reverseList = function(node) {
+	if(node === null || node.next === null) return node;
+	let res = reverseList(node.next);
+	node.next.next = node;
+	node.next = null;
+	return res;
+}
+
+const reverseList = function(node) {
+	if(node === null || node.next === null) return node;
+	let res = reverseList(node.next);
+	node.next.next = node;
+	node.next = null;
+	return res;
+}
+
+// coding interview sample
 
 console.log('reverse list', reverseList(list.head));

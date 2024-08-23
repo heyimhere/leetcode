@@ -52,6 +52,86 @@ function isPalindrome(head) {
   return flag;
 }
 
+function isPalindrome(head) {
+  let node = head.head;
+  let vode = head.head;
+  let flag = true;
+  backtrack(node);
+  function backtrack(node) {
+    node.next && backtrack(node.next);
+    if(node.value !== vode.value) flag = false;
+    vode = vode.next;
+  }
+  return flag;
+}
+
+function isPalindrome(head) {
+  let node = head.head;
+  let vode = head.head;
+  let flag = true;
+  backtrack(node);
+  function backtrack(node) {
+    node.next && backtrack(node.next);
+    if(node.value !== vode.value) flag = false;
+    vode = vode.next;
+  }
+  return flag;
+}
+
+function isPalindrome(head) {
+  let node = head.head;
+  let vode = head.head;
+  let flag = true;
+  backtrack(node);
+  function backtrack(node) {
+    node.next && backtrack(node.next);
+    if(node.value !== vode.value) flag = false;
+    vode = vode.next;
+  }
+  return flag;
+}
+
+function isPalindrome(head) {
+  let node = head.head;
+  let vode = head.head;
+  let flag = true;
+  backtrack(node);
+  function backtrack(node) {
+    node.next && backtrack(node.next);
+    if(node.value !== vode.value) flag = false;
+    vode = vode.next;
+  }
+  return flag;
+}
+
+function isPalindrome(head) {
+  let node = head.head;
+  let vode = head.head;
+  let flag = true;
+
+  backtrack(node);
+  function backtrack(node) {
+    node.next && backtrack(node.next);
+    if(node.value !== vode.next) flag = false;
+    vode = vode.next;
+  }
+  return flag;
+}
+
+function isPalindrome(head) {
+  let node = head.head;
+  let vode = head.head;
+  let flag = true;
+
+  backtrack(node);
+  function backtrack(node) {
+    node.next && backtrack(node.next);
+    if(node.value !== vode.value) flag = false;
+    vode = vode.next;
+  }
+  return flag;
+}
+
 // coding interview sample
 
 console.log('is palindrome', isPalindrome(hd));

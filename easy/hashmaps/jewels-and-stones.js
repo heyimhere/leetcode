@@ -20,4 +20,6 @@ const numJewelsInStones = function(jewels, stones) {
 	return ans;
 };
 
+// coding interview sample
+
 console.log('number of jewels in stones', numJewelsInStones(j, s));

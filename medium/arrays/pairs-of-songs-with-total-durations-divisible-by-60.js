@@ -1,19 +1,4 @@
 const t = [30,20,150,100,40];
-// const t = [60,60,60];
-// function numPairsDivisibleBy60(time) {
-//   // code here
-//   let pairs = 0;
-//   for(let i = 0; i < time.length; i++) {
-//    for(let j = i + 1; j < time.length; j++) {
-//     if((time[i] + time[j]) % 60 === 0) {
-//       console.log('time[i]', time[i], 'time[j]', time[j]);
-//       pairs++;
-//     }
-//    } 
-//   }
-//   console.log('pairs', pairs);
-//   return pairs;
-// }
 
 // function numPairsDivisibleBy60(time) {
 //   // code here
@@ -28,8 +13,21 @@ const t = [30,20,150,100,40];
 // }
 
 // I like this approach better.
+// function numPairsDivisibleBy60(time) {
+//   let count = 0;
+//   let hashmap = {};
+
+//   for(let currTime of time) {
+//     const remainder = currTime % 60;
+//     const diff = (60 - remainder) % 60;
+//     count += hashmap[diff] ? hashmap[diff] : 0;
+//     hashmap[remainder] = hashmap[remainder] ? hashmap[remainder] += 1 : 1;
+//   }
+//   return count;
+// }
+
+// practice 1
 function numPairsDivisibleBy60(time) {
-  // code here
   let count = 0;
   let hashmap = {};
 
@@ -41,5 +39,170 @@ function numPairsDivisibleBy60(time) {
   }
   return count;
 }
+
+// practice 2
+function numPairsDivisibleBy60(time) {
+  let count = 0;
+  let hashmap = {};
+
+  for(let currTime of time) {
+    const remainder = currTime % 60;
+    const diff = (60 - remainder) % 60;
+    count += hashmap[diff] ? hashmap[diff] : 0;
+    hashmap[remainder] = hashmap[remainder] ? hashmap[remainder] += 1 : 1;
+  }
+  return count;
+}
+
+// practice 3
+function numPairsDivisibleBy60(time) {
+  let count = 0;
+  let hashmap = {};
+
+  for(let currTime of time) {
+    const remainder = currTime % 60;
+    const diff = (60 - remainder) % 60;
+    count += hashmap[diff] ? hashmap[diff] : 0;
+    hashmap[remainder] = hashmap[remainder] ? hashmap[remainder] += 1 : 1;
+  }
+  return count;
+}
+
+// practice 4
+function numPairsDivisibleBy60(time) {
+  let count = 0;
+  let hashmap = {};
+
+  for(let currTime of time) {
+    const remainder = currTime % 60;
+    const diff = (60 - remainder) % 60;
+
+    count += hashmap[diff] ? hashmap[diff] : 0;
+    hashmap[remainder] = hashmap[remainder] ? hashmap[remainder] += 1 : 1;
+  }
+  return count;
+}
+
+// practice 5
+function numPairsDivisibleBy60(time) {
+  let count = 0;
+  let hashmap = {};
+
+  for(let currTime of time) {
+    const remainder = currTime % 60;
+    const diff = (60 - remainder) % 60;
+
+    count += hashmap[diff] ? hashmap[diff] : 0;
+    hashmap[remainder] = hashmap[remainder] ? hashmap[remainder] += 1 : 1;
+  }
+  return count;
+}
+
+// practice 6
+function numPairsDivisibleBy60(time) {
+  let count = 0;
+  let hashmap = {};
+
+  for(let currTime of time) {
+    const remainder = currTime % 60;
+    const diff = (60 - remainder) % 60;
+
+    count += hashmap[diff] ? hashmap[diff] : 0;
+    hashmap[remainder] = hashmap[remainder] ? hashmap[remainder] += 1 : 1;
+  }
+  return count;
+}
+
+// practice 7
+function numPairsDivisibleBy60(time) {
+  let count = 0;
+  let hashmap = {};
+
+  for(let currTime of time) {
+    const remainder = currTime % 60;
+    const diff = (60 - remainder) % 60;
+
+    count += hashmap[diff] ? hashmap[diff] : 0;
+    hashmap[remainder] = hashmap[remainder] ? hashmap[remainder] += 1 : 1;
+  }
+  return count;
+}
+
+// practice 8
+function numPairsDivisibleBy60(time) {
+  let count = 0;
+  let hashmap = {};
+
+  for(let currTime of time) {
+    const remainder = currTime % 60;
+    const diff = (60 - remainder) % 60;
+
+    count += hashmap[diff] ? hashmap[diff] : 0;
+    hashmap[remainder] = hashmap[remainder] ? hashmap[remainder] += 1 : 1;
+  }
+  return count;
+}
+
+// practice 9
+function numPairsDivisibleBy60(time) {
+  let count = 0;
+  let hashmap = {};
+
+  for(let currTime of time) {
+    const remainder = currTime % 60;
+    const diff = (60 - remainder) % 60;
+
+    count += hashmap[diff] ? hashmap[diff] : 0;
+    hashmap[remainder] = hashmap[remainder] ? hashmap[remainder] += 1 : 1;
+  }
+  return count;
+}
+
+// practice 10
+function numPairsDivisibleBy60(time) {
+  let count = 0;
+  let hashmap = {};
+
+  for(let currTime of time) {
+    const remainder = currTime % 60;
+    const diff = (60 - remainder) % 60;
+
+    count += hashmap[diff] ? hashmap[diff] : 0;
+    hashmap[remainder] = hashmap[remainder] ? hashmap[remainder] += 1 : 1
+  }
+  return count;
+}
+
+// practice 11
+function numPairsDivisibleBy60(time) {
+  let count = 0;
+  let hashmap = {};
+
+  for(let currTime of time) {
+    const remainder = currTime % 60;
+    const diff = (60 - remainder) % 60;
+
+    count += hashmap[diff] ? hashmap[diff] : 0;
+    hashmap[remainder] = hashmap[remainder] ? hashmap[remainder] += 1 : 1;
+  }
+  return count;
+}
+
+// practice 12
+function numPairsDivisibleBy60(time) {
+  let count = 0;
+  let hashmap = {};
+
+  for(let currTime of time) {
+    const remainder = currTime - 60;
+    const diff = (60 - remainder) % 60;
+
+    count += hashmap[diff] ? hashmap[diff] : 0;
+    hashmap[remainder] = hashmap[remainder] ? hashmap[remainder] += 1 : 1;
+  }
+  return count;
+}
+
+// coding interview sample
 
 console.log('number of divisible pairs by 60', numPairsDivisibleBy60(t));
