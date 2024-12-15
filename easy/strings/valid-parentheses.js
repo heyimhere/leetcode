@@ -77,6 +77,25 @@ const string = '()[]{}';
 //   return !stack.length;
 // }
 
+// const isValid = (s) => {
+//   const stack = [];
+//
+//   for(let i of s) {
+//     if(i === '(' || i === '{' || i === '[') {
+//       stack.push(i);
+//     } else {
+//       if(!stack.length ||
+//       (i === ')' && stack[stack.length - 1] !== '(') ||
+//       (i === '}' && stack[stack.length - 1] !== '{') || 
+//       (i === ']' && stack[stack.length - 1] !== '[')) {
+//         return false;
+//       }
+//       stack.pop();
+//     }
+//   }
+//   return !stack.length;
+// }
+
 const isValid = (s) => {
   const stack = [];
 
@@ -84,10 +103,10 @@ const isValid = (s) => {
     if(i === '(' || i === '{' || i === '[') {
       stack.push(i);
     } else {
-      if(!stack.length ||
+      if(!stack.length || 
       (i === ')' && stack[stack.length - 1] !== '(') ||
-      (i === '}' && stack[stack.length - 1] !== '{') || 
-      (i === ']' && stack[stack.length - 1] !== '[')) {
+      (i === '{' && stack[stack.length - 1] !== '}') ||
+      (i === '[' && stack[stack.length - 1] !== ']')) {
         return false;
       }
       stack.pop();
