@@ -1,47 +1,45 @@
 const strA = ['ahffaksfajeeubsne', 'jefaa'];
 const minWindowSubstring = (strArr) => {
-  const firstStr = strArr[0];
-  const secondStr = strArr[1];
+  const [source, target] = strArr;
+  const requiredChars = {};
+  for(let char of target) {
+    requiredChars[char] = (requiredChars[char] || 0) + 1;
+  }
 
-  const targetCount = new Map();
-  for(const char of secondStr) {
-    targetCount.set(char, (targetCount.get(char) || 0) + 1);
-  };
+  const windowCount = {};
+  let charsMatched = 0;
+  const totalRequired = Object.keys(requiredChars).length;
 
-  const windowCount = new Map();
+  let left = 0;
+  let minWindow = [-1, -1];
+  let minLength = Infinity;
 
-  let start = 0;
-  let matched = 0;
-  let minLen = Infinity;
-  let minWindow = "";
+  for(let right = 0; right < source.length; right++) {
+    const rightChar = source[right];
+    windowCount[rightChar] = (windowCount[rightChar] || 0) + 1;
 
-  for(let end = 0; end < firstStr.length; end++) {
-    const char = firstStr[end];
-    windowCount.set(char, (windowCount.get(char) || 0) + 1);
+    if(rightChar in requiredChars && windowCount[rightChar] === requiredChars[rightChar]) {
+      charsMatched++;
+    }
 
-    if(targetCount.has(char) && windowCount.get(char) === targetCount.get(char)) {
-      matched++;
-    };
+    while(charsMatched === totalRequired) {
+      if((right - left + 1) < minLength) {
+        minWindow = [left, right];
+        minLength = right - left + 1;
+      }
 
-    while(matched === targetCount.size) {
-      const windowSize = end - start + 1;
-      if(windowSize < minLen) {
-        minLen = windowSize;
-        minWindow = firstStr.substring(start, end + 1);
-      };
+      const leftChar = source[left];
+      windowCount[leftChar]--;
+      if(leftChar in requiredChars && windowCount[leftChar] < requiredChars[leftChar]) {
+        charsMatched--;
+      }
 
-      const leftChar = firstStr[start];
-      windowCount.set(leftChar, windowCount.get(leftChar) - 1);
-
-      if(targetCount.has(leftChar) && windowCount.get(leftChar) < targetCount.get(leftChar)) {
-        matched--;
-      };
-
-      start++;
+      left++;
     }
   }
 
-  return minWindow;
+  const [start, end] = minWindow;
+  return minLength === Infinity ? '' : source.slice(start, end + 1);
 }
 
 console.log('minWindowSubstring', minWindowSubstring(strA));
