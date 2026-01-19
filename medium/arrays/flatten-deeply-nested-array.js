@@ -14,18 +14,38 @@ const num = 1;
 // }
 
 const flat = (arr, n) => {
-	if(n === 0) return arr;
-	let flattenArray = [];
-	for(let i = 0; i < arr.length; i++) {
-		if(Array.isArray(arr[i])) {
-			flattenArray.push(...flat(arr[i], n - 1));
-		} else {
-			flattenArray.push(arr[i]);
-		}
-	}
-	return flattenArray;
-}
+  if (n === 0) return arr;
+  let flattenArray = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (Array.isArray(arr[i])) {
+      flattenArray.push(...flat(arr[i], n - 1));
+    } else {
+      flattenArray.push(arr[i]);
+    }
+  }
+  return flattenArray;
+};
 
 // I like this problem.
 
-console.log('flatten array', flat(a, num));
+console.log("flatten array", flat(a, num));
+
+const flattenArray = (arr) => {
+  let answer = [];
+  function helper(innerArray) {
+    for (let i = 0; i < innerArray.length; i++) {
+      if (!(i in innerArray)) continue;
+      if (Array.isArray(innerArray[i])) {
+        helper(innerArray[i]);
+      } else {
+        answer.push(innerArray[i]);
+      }
+    }
+  }
+
+  helper(arr);
+
+  return answer;
+};
+
+console.log("flat array", flattenArray(a));

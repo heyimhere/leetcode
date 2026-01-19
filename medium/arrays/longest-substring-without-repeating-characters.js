@@ -1,186 +1,52 @@
-const string = 'abcabcbb';
-// const lengthOfLongestSubstring = (s) => {
-// 	const seenMap = new Map();
-// 	let start = 0;
-// 	let maxLength = 0;
-//
-// 	for(let i = 0; i < s.length; i++) {
-// 		if(seenMap.has(s[i])) start = Math.max(seenMap.get(s[i]) + 1, start);
-// 		seenMap.set(s[i], i);
-// 		maxLength = Math.max(i - start + 1, maxLength);
-// 	};
-// 	return maxLength;
-// };
-
-// practice 1
-// const lengthOfLongestSubstring = (s) => {
-// 	const seenMap = new Map();
-// 	let start = 0;
-// 	let maxLength = 0;
-//
-// 	for(let i = 0; i < s.length; i++) {
-// 		if(seenMap.has(s[i])) start = Math.max(seenMap.get(s[i]) + 1, start);
-// 		seenMap.set(s[i], i);
-// 		maxLength = Math.max(i - start + 1, maxLength);
-// 	};
-// 	return maxLength;
-// }
-
-// practice 2
-// const lengthOfLongestSubstring = (s) => {
-// 	const seenMap = new Map();
-// 	let start = 0;
-// 	let maxLength = 0;
-//
-// 	for(let i = 0; i < s.length; i++) {
-// 		if(seenMap.has(s[i])) start = Math.max(seenMap.get(s[i]) + 1, start);
-// 		seenMap.set(s[i], i);
-// 		maxLength = Math.max(i - start + 1, maxLength);
-// 	}
-// 	return maxLength;
-// }
-
-// practice 3
-// const lengthOfLongestSubstring = (s) => {
-// 	const seenMap = new Map();
-// 	let start = 0;
-// 	let maxLength = 0;
-//
-// 	for(let i = 0; i < s.length; i++) {
-// 		if(seenMap.has(s[i])) start = Math.max(s[i] + 1, start);
-// 		seenMap.set(s[i], i);
-// 		maxLength = Math.max(i - start + 1, maxLength);
-// 	}
-// 	return maxLength;
-// }
-
-// practice 4 
-// const lengthOfLongestSubstring = (s) => {
-// 	const seenMap = new Map();
-// 	let start = 0;
-// 	let maxLength = 0;
-//
-// 	for(let i = 0; i < s.length; i++) {
-// 		if(seenMap.has(s[i])) start = Math.max(s[i] + 1, start);
-// 		seenMap.set(s[i], i);
-// 		maxLength = Math.max(i - start + 1, maxLength);
-// 	}
-// 	return maxLength;
-// }
-
-// practice 5
-// const lengthOfLongestSubstring = (s) => {
-// 	const seenMap = new Map();
-// 	let start = 0;
-// 	let maxLength = 0;
-//
-// 	for(let i = 0; i < s.length; i++) {
-// 		if(seenMap.has(s[i])) start = Math.max(s[i] + 1, start);
-// 		seenMap.set(s[i], i);
-// 		maxLength = Math.max(i - start + 1, maxLength);
-// 	}
-// 	return maxLength;
-// }
-
-// practice 6
-// const lengthOfLongestSubstring = (s) => {
-// 	const seenMap = new Map();
-// 	let start = 0;
-// 	let maxLength = 0;
-//
-// 	for(let i = 0; i < s.length; i++) {
-// 		if(seenMap.has(s[i])) start = Math.max(s[i] + 1, start);
-// 		seenMap.set(s[i], i);
-// 		maxLength = Math.max(i - start + 1, maxLength);
-// 	}
-// 	return maxLength;
-// }
-
-// practice 7 
-// const lengthOfLongestSubstring = (s) => {
-// 	const seenMap = new Map();
-// 	let start = 0;
-// 	let maxLength = 0;
-//
-// 	for(let i = 0; i < s.length; i++) {
-// 		if(seenMap.has(s[i])) start = Math.max(s[i] + 1, start);
-// 		seenMap.set(s[i], i);
-// 		maxLength = Math.max(i - start + 1, maxLength);
-// 	}
-// 	return maxLength;
-// }
-
-// practice 8
-// const lengthOfLongestSubstring = (s) => {
-// 	const seenMap = new Map();
-// 	let start = 0;
-// 	let maxLength = 0;
-//
-// 	for(let i = 0; i < s.length; i++) {
-// 		if(seenMap.has(s[i])) start = Math.max(s[i] + 1, start);
-// 		seenMap.set(s[i], i);
-// 		maxLength = Math.max(i - start + 1, maxLength);
-// 	}
-// 	return maxLength;
-// }
-
-// practice 9
-// const lengthOfLongestSubstring = (s) => {
-// 	const seenMap = new Map();
-// 	let start = 0;
-// 	let maxLength = 0;
-//
-// 	for(let i = 0; i < s.length; i++) {
-// 		if(seenMap.has(s[i])) start = Math.max(s[i] + 1, start);
-// 		seenMap.set(s[i], i);
-// 		maxLength = Math.max(i - start + 1, maxLength);
-// 	}
-// 	return maxLength;
-// }
-
-// practice 10
-// const lengthOfLongestSubstring = (s) => {
-// 	const seenMap = new Map();
-// 	let start = 0;
-// 	let maxLength = 0;
-//
-// 	for(let i = 0; i < s.length; i++) {
-// 		if(seenMap.has(s[i])) start = Math.max(s[i] + 1, start);
-// 		seenMap.set(s[i], i);
-// 		maxLength = Math.max(i - start + 1, maxLength);
-// 	}
-// 	return maxLength;
-// }
-
-// const lengthOfLongestSubstring = (s) => {
-// 	const seenMap = new Map();
-// 	let start = 0;
-// 	let maxLength = 0;
-	
-// 	for(let i = 0; i < s.length; i++) {
-// 		if(seenMap.has(s[i])) start = Math.max(seenMap.get(s[i]) + 1, start);
-// 		seenMap.set(s[i], i);
-// 		maxlength = Math.max(i - start + 1, maxlength);
-// 	};
-// 	return maxLength;
-// }
-
+// study course
 const lengthOfLongestSubstring = (s) => {
-	const seenMap = new Map();
-	let left = 0;
-	let maxLen = 0;
+  let left = 0;
+  let best = 0;
+  const last = new Map();
 
-	for(let i = 0; i < s.length; i++) {
-		if(seenMap.has(s[i])) {
-			left = Math.max(seenMap.get(s[i]) + 1, left);
-		}
+  for (let right = 0; right < s.length; right++) {
+    const chr = s[right];
 
-		seenMap.set(s[i], i);
-		maxLen = Math.max(i - left + 1, maxLen);
-	}
-	return maxLen;
+    if (last.has(chr) && last.get(chr) >= left) {
+      left = last.get(chr) + 1;
+    }
+
+    last.set(chr, right);
+    best = Math.max(best, right - left + 1);
+  }
+
+  return best;
 };
 
-// coding interview sample
+console.log(
+  "length of longest substring",
+  lengthOfLongestSubstring("abcabcbb"),
+);
 
-console.log('length of longest substring', lengthOfLongestSubstring(string));
+const lengthOfLongestSubstringWord = (str) => {
+  let left = 0;
+  let bestlen = 0;
+  let bestStart = 0;
+  const last = new Map();
+
+  for (let right = 0; right < str.lenth; right++) {
+    const chr = str[right];
+
+    if (last.has(chr) && last.get(chr) >= left) {
+      left = last.get(chr) + 1;
+    }
+
+    last.set(chr, right);
+
+    let diff = right - left + 1;
+
+    if (diff > bestlen) {
+      bestlen = diff;
+      bestStart = left;
+    }
+  }
+
+  return str.slice(bestStart, bestStart + bestlen);
+};
+
+console.log("best length word", lengthOfLongestSubstringWord("abciabcbb"));

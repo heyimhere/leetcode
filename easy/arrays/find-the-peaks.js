@@ -1,7 +1,6 @@
 const m = [1, 4, 3, 8, 5];
 
 const findPeaks = function(mountain) {
-  // code here
   let pointer = 0;
   let ans = [];
   for(let i = 1; i < mountain.length - 1; i++) {

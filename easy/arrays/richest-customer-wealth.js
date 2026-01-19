@@ -5,7 +5,6 @@ const acc = [
 ];
 
 const maximumWealth = function(accounts) {
-  // code here
   let isMax = 0;
   for(let i = 0; i < accounts.length; i++) {
     let sum = 0;
