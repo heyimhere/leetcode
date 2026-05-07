@@ -1,127 +1,63 @@
 class ListNode {
-	constructor(data) {
-		this.value = data;
-		this.next = null;
-	}
+  constructor(val = 0, next = null) {
+    this.val = val;
+    this.next = next;
+  }
+};
+
+const listFromArray = (arr) => {
+  if (arr.length === 0) return null;
+  let head = new ListNode(arr[0]);
+  let current = head;
+
+  for (let i = 1; i < arr.length; i++) {
+    current.next = new ListNode(arr[i]);
+    current = current.next;
+  }
+
+  return head;
 }
 
-class LinkedList {
-	constructor(head = null) {
-		this.head = head;
-	}
+const printList = (head) => {
+  let result = [];
+
+  while (head) {
+    result.push(head.val);
+    head = head.next;
+  }
+
+  return result.join(' > ');
 }
 
-let node1 = new ListNode(1);
-let node2 = new ListNode(2);
-let node3 = new ListNode(3);
-let node4 = new ListNode(4);
-let node5 = new ListNode(5);
-node1.next = node2;
-node2.next = node3;
-node3.next = node4;
-node4.next = node5;
-let list = new LinkedList(node1);
+const reverseList = function (head) {
+  let prev = null;
+  let current = head;
 
-// const reverseList = function(node) {
-// 	let head = node.head;
-// 	backtrack(head);
-// 	function backtrack(head) {
-// 		let next = head.next;
-// 		next && backtrack(next);
-// 		console.log('head', head);
-// 		console.log('node.head', node.head);
-// 	}
-// 	return head;
-// };
+  while (current) {
+    let next = current.next;
+    current.next = prev;
+    prev = current;
+    current = next;
+  }
 
-// const reverseList = function(node) {
-// 	if(node === null || node.next === null) return node;
-// 	let res =  reverseList(node.next);
-// 	node.next.next = node;
-// 	node.next = null;
-// 	return res;
-// }
-
-const reverseList = function(node) {
-	if(node === null || node.next === null) return node;
-	let res = reverseList(node.next);
-	node.next.next = node;
-	node.next = null;
-	return res;
+  return printList(prev);
 }
 
-const reverseList = function(node) {
-	if(node === null || node.next === null) return node;
-	let res = reverseList(node.next);
-	node.next.next = node;
-	node.next = null;
-	return res;
+const reverseList2 = (head) => {
+  if (!head || !head.next) return head;
+
+  let newHead = reverseList2(head.next);
+
+  head.next.next = head;
+  head.next = null;
+
+  return newHead;
 }
 
-const reverseList = function(node) {
-	if(node === null || node.next === null) return node;
-	let res = reverseList(node.next);
-	node.next.next = node;
-	node.next = null;
-	return res;
-}
-
-const reverseList = function(node) {
-	if(node === null || node.next === null) return node;
-	let res = reverseList(node.next);
-	node.next.next = node;
-	node.next = null;
-	return res;
-}
-
-const reverseList = function(node) {
-	if(node === null || node.next) return node;
-	let res = reverseList(node.next);
-	node.next.next = node;
-	node.next = null;
-	return res;
-}
-
-const reverseList = function(node) {
-	if(node === null || node.next === null) return node;
-	let res = reverseList(node.next);
-	node.next.next = node;
-	node.next = null;
-	return res;
-}
-
-const reverseList = function(node) {
-	if(node === null || node.next === null) return node; 
-	let res = reverseList(node.next);
-	node.next.next = node;
-	node.next = null;
-	return res;
-}
-
-const reverseList = function(node) {
-	if(node === null || node.next === null) return node;
-	let res = reverseList(node.next);
-	node.next.next = node;
-	node.next = null;
-	return res;
-}
-
-const reverseList = function(node) {
-	if(node === null || node.next === null) return node;
-	let res = reverseList(node.next);
-	node.next.next = node;
-	node.next = null;
-	return res;
-}
-
-const reverseList = function(node) {
-	if(node === null || node.next === null) return node;
-	let res = reverseList(node.next);
-	node.next.next = node;
-	node.next = null;
-	return res;
-}
 
 // coding interview sample
 
-console.log('reverse list', reverseList(list.head));
+console.log('reverse list', reverseList(listFromArray([1, 2, 3, 4, 5])));
+console.log('reverse list 2', reverseList(listFromArray([1, 2, 3, 4, 5])));
+
+
