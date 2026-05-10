@@ -1,38 +1,18 @@
-// LC #424 - Longest Repeating Character Replacement
-// Difficulty: Medium | Pattern: Sliding Window
+// LC #739 - Daily Temperatures
+// Difficulty: Medium | Pattern: Monotonic Stack
 //
-// Given a string s and int k, you may replace at most k characters.
-// Return the length of the longest substring containing all the same letter
-// you can get after those replacements.
+// For each day, find how many days until a warmer temperature.
+// Return an array of those wait times (0 if no warmer day ahead).
 //
-// KEY INSIGHT: A window is valid when:
-//   (window size) - (count of most frequent char in window) <= k
-// If that condition breaks, shrink from the left.
+// HINT: Use a stack. As you loop, ask: "does today's temp beat
+// anything waiting on the stack?" If yes, resolve it.
+// Think about what to store in the stack — the index is more useful than the temp itself.
 
-const characterReplacement = (s, k) => {
+const dailyTemperatures = (temps) => {
   // your solution here
-  let left = 0;
-  const currentWindow = new Map();
-  let maxFreq = 0;
-  let max = 0;
-  let currlen = 0;
-
-  for(let right = 0; right < s.length; right++) {
-    currentWindow.set(s[right], (currentWindow.get(s[right]) || 0) + 1);
-
-    maxFreq = Math.max(...currentWindow.values());
-    currLen = right - left + 1;
-    if(currLen - maxFreq > k) {
-      currentWindow.set(s[left], currentWindow.get(s[left]) - 1);
-      left++;
-      currLen--;
-    }
-    max = Math.max(max, currLen);
-  }
-  return max;
 };
 
-console.log(characterReplacement("ABAB", 2));    // expected: 4
-console.log(characterReplacement("AABABBA", 1)); // expected: 4
-console.log(characterReplacement("AAAA", 2));    // expected: 4 (no replacements needed)
-console.log(characterReplacement("ABCD", 1));    // expected: 2
+console.log(dailyTemperatures([73, 74, 75, 71, 69, 72, 76, 73])); // [1,1,4,2,1,1,0,0]
+console.log(dailyTemperatures([30, 40, 50, 60]));                  // [1,1,1,0]
+console.log(dailyTemperatures([30, 60, 90]));                      // [1,1,0]
+console.log(dailyTemperatures([90, 80, 70, 60]));                  // [0,0,0,0]
