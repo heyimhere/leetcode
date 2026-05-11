@@ -1,0 +1,58 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --sidebar-width: 240px;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: #09090b;
+  color: #f4f4f5;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Shiki code block overrides */
+.shiki {
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 1rem 0;
+}
+
+/* Scrollbar styling for sidebar */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 2px;
+}
+
+/* Prose overrides for dark MDX content */
+.prose {
+  --tw-prose-body: #d4d4d8;
+  --tw-prose-headings: #f4f4f5;
+  --tw-prose-lead: #a1a1aa;
+  --tw-prose-links: #a855f7;
+  --tw-prose-bold: #f4f4f5;
+  --tw-prose-counters: #a1a1aa;
+  --tw-prose-bullets: #52525b;
+  --tw-prose-hr: #27272a;
+  --tw-prose-quotes: #f4f4f5;
+  --tw-prose-quote-borders: #a855f7;
+  --tw-prose-captions: #a1a1aa;
+  --tw-prose-code: #e4e4e7;
+  --tw-prose-pre-code: #e4e4e7;
+  --tw-prose-pre-bg: #18181b;
+  --tw-prose-th-borders: #3f3f46;
+  --tw-prose-td-borders: #27272a;
+}

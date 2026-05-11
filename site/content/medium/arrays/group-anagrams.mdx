@@ -1,0 +1,74 @@
+---
+title: "Group Anagrams"
+lcNumber: 49
+difficulty: "medium"
+topic: "arrays"
+slug: "group-anagrams"
+pattern: "HashMap + Sorting"
+timeComplexity: "O(n · k log k)"
+spaceComplexity: "O(nk)"
+---
+
+## Problem
+
+Given an array of strings `strs`, group the anagrams together. You can return the answer in any order.
+
+**Example:**
+```
+Input:  strs = ["eat","tea","tan","ate","nat","bat"]
+Output: [["bat"],["nat","tan"],["ate","eat","tea"]]
+```
+
+**Constraints:**
+- `1 <= strs.length <= 10⁴`
+- `0 <= strs[i].length <= 100`
+- Strings consist of lowercase English letters.
+
+---
+
+## How to Think About It
+
+The central question is: what makes two strings anagrams? They have the same characters in the same frequencies. That means if you **sort** both strings alphabetically, they'll produce the identical string.
+
+Use that sorted string as a **HashMap key**. All anagrams will map to the same key — so you can group them naturally.
+
+Walk through each word → sort its letters → use the sorted word as a Map key → push the original word into that key's bucket.
+
+**The sorted-key trick is the core idea.** Once you see it, the rest is just building and returning the Map's values.
+
+**Alternative key (frequency array):** Instead of sorting, you can build a frequency string like `"1#0#0#...#1"` (counts of a-z). This gets the time complexity to O(n·k) instead of O(n·k log k). Worth mentioning but sorting is the readable choice.
+
+**Pattern trigger:** "Group things that are equivalent under some transformation" → HashMap with a canonical key.
+
+---
+
+## Boilerplate
+
+```javascript
+const groupAnagrams = (strs) => {
+  // your code here
+};
+
+console.log(groupAnagrams(['eat', 'tea', 'tan', 'ate', 'nat', 'bat']));
+// [["eat","tea","ate"],["tan","nat"],["bat"]] — order within groups may vary
+```
+
+**Key decisions to make:**
+- What is the canonical key that all anagrams share?
+- What data structure holds the groups?
+
+---
+
+## Big-O Breakdown
+
+| | Complexity | Reasoning |
+|---|---|---|
+| **HashMap + sort key** | Time O(n · k log k) | n words, each sorted in O(k log k) |
+| | Space O(nk) | Storing all words in the map |
+| **Frequency array key** | Time O(n · k) | n words, O(k) to build freq string |
+| | Space O(nk) | Same |
+| **Brute force (compare all pairs)** | Time O(n² · k log k) | Every pair compared |
+
+`n` = number of strings, `k` = max string length.
+
+The HashMap approach is efficient because building the key is cheap relative to comparing every pair. Sorting each string once is all you need.
