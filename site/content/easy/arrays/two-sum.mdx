@@ -1,0 +1,65 @@
+---
+title: "Two Sum"
+lcNumber: 1
+difficulty: "easy"
+topic: "arrays"
+slug: "two-sum"
+pattern: "Hash Map"
+timeComplexity: "O(n)"
+spaceComplexity: "O(n)"
+---
+
+## Problem
+
+Given an array of integers `nums` and an integer `target`, return the **indices** of the two numbers that add up to `target`. You may assume exactly one solution exists, and you may not use the same element twice.
+
+**Example:**
+```
+Input:  nums = [2, 7, 11, 15], target = 9
+Output: [0, 1]   // nums[0] + nums[1] = 2 + 7 = 9
+```
+
+**Constraints:**
+- `2 <= nums.length <= 10⁴`
+- `-10⁹ <= nums[i] <= 10⁹`
+- Exactly one valid answer exists.
+
+---
+
+## How to Think About It
+
+The brute-force approach checks every pair — that's O(n²). The insight is simpler: for each number, you already know what its **complement** must be (`target - num`). If you could look that up instantly instead of scanning, you'd solve this in one pass.
+
+A `Map` gives you O(1) lookup. As you walk through the array, **before storing `nums[i]`**, ask: *"Is `target - nums[i]` already in the map?"* If yes — you found your pair.
+
+**Pattern trigger:** Any time a problem asks you to find two things that sum to X, reach for HashMap complement lookup.
+
+---
+
+## Boilerplate
+
+```javascript
+const twoSum = (nums, target) => {
+  // your code here
+};
+
+console.log(twoSum([2, 7, 11, 15], 9)); // [0, 1]
+console.log(twoSum([3, 2, 4], 6));      // [1, 2]
+```
+
+**Key decisions to make:**
+- What do you store in the Map — values or indices?
+- When do you check vs. when do you store?
+
+---
+
+## Big-O Breakdown
+
+| | Complexity | Reasoning |
+|---|---|---|
+| **Optimized (HashMap)** | Time O(n) | Single pass — each element checked once |
+| | Space O(n) | Map holds up to n entries |
+| **Brute force (nested loops)** | Time O(n²) | Every pair checked |
+| | Space O(1) | No extra storage |
+
+The HashMap trades space for time — a classic DSA tradeoff. Here O(n) space is worth it since the time improvement is quadratic → linear.

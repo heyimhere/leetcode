@@ -1,0 +1,70 @@
+---
+title: "Best Time to Buy and Sell Stock"
+lcNumber: 121
+difficulty: "easy"
+topic: "arrays"
+slug: "best-time-to-buy-and-sell-stock"
+pattern: "Sliding Window / Greedy"
+timeComplexity: "O(n)"
+spaceComplexity: "O(1)"
+---
+
+## Problem
+
+Given an array `prices` where `prices[i]` is the stock price on day `i`, find the **maximum profit** you can achieve by buying on one day and selling on a later day. If no profit is possible, return `0`.
+
+**Example:**
+```
+Input:  prices = [7, 1, 5, 3, 6, 4]
+Output: 5   // Buy at 1 (day 2), sell at 6 (day 5)
+```
+
+**Constraints:**
+- You must buy before you sell.
+- You can only hold one stock at a time.
+- Return `0` if no profit is possible.
+
+---
+
+## How to Think About It
+
+The naive approach tries all buy/sell pairs — O(n²). The insight: you only need to track **two things** as you scan left to right:
+
+1. The **minimum price seen so far** — the best possible buy point up to now.
+2. The **maximum profit so far** — update it at each step using `price - minSoFar`.
+
+You never need to look back. Each day you ask: *"If I sold today, what's my profit given the cheapest buy I've seen?"*
+
+This is a classic single-pass greedy scan. The "sliding window" framing is: the window's left edge is always the current minimum price.
+
+**Watch out for:** Selling before buying — that's why you track `minPrice` before checking profit, not after.
+
+---
+
+## Boilerplate
+
+```javascript
+const maxProfit = (prices) => {
+  // your code here
+};
+
+console.log(maxProfit([7, 1, 5, 3, 6, 4])); // 5
+console.log(maxProfit([7, 6, 4, 3, 1]));     // 0 — prices only fall
+```
+
+**Key decisions to make:**
+- What two variables do you need to track?
+- In what order do you update them at each step?
+
+---
+
+## Big-O Breakdown
+
+| | Complexity | Reasoning |
+|---|---|---|
+| **Optimized (one pass)** | Time O(n) | Visit each price exactly once |
+| | Space O(1) | Two variables — no extra storage |
+| **Brute force** | Time O(n²) | Every buy/sell pair checked |
+| | Space O(1) | No extra storage |
+
+This is one of the purest examples of O(1) space — you reduce the entire problem to tracking two numbers.

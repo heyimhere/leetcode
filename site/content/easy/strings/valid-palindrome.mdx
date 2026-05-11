@@ -1,0 +1,72 @@
+---
+title: "Valid Palindrome"
+lcNumber: 125
+difficulty: "easy"
+topic: "strings"
+slug: "valid-palindrome"
+pattern: "Two Pointers"
+timeComplexity: "O(n)"
+spaceComplexity: "O(1)"
+---
+
+## Problem
+
+A phrase is a palindrome if, after converting all uppercase letters to lowercase and removing all non-alphanumeric characters, it reads the same forward and backward.
+
+Given a string `s`, return `true` if it is a palindrome, or `false` otherwise.
+
+**Example:**
+```
+Input:  s = "A man, a plan, a canal: Panama"
+Output: true   // "amanaplanacanalpanama" is a palindrome
+
+Input:  s = "race a car"
+Output: false
+```
+
+---
+
+## How to Think About It
+
+The simplest version of palindrome check is: clean the string (lowercase, alphanumeric only), then compare it to its reverse. That works but uses O(n) space.
+
+The **two-pointer** approach avoids creating the cleaned string at all:
+- Set `left` at the start, `right` at the end.
+- Skip non-alphanumeric characters from either side.
+- Compare the characters at each pointer after normalizing to lowercase.
+- If they ever don't match, return `false`. If the pointers meet, return `true`.
+
+**Pattern trigger:** Any problem where you compare a sequence against itself in reverse — two pointers from both ends is the go-to. This is also the core motion in 3Sum and Container With Most Water.
+
+---
+
+## Boilerplate
+
+```javascript
+const isPalindrome = (s) => {
+  // your code here
+};
+
+console.log(isPalindrome('A man, a plan, a canal: Panama')); // true
+console.log(isPalindrome('race a car'));                      // false
+console.log(isPalindrome(' '));                               // true (empty after clean)
+```
+
+**Key decisions to make:**
+- How do you check if a character is alphanumeric without regex?
+- In what order do you skip vs. compare?
+
+**Hint for alphanumeric check:** `/[a-z0-9]/.test(char)` on the lowercased character, or use `charCodeAt` bounds.
+
+---
+
+## Big-O Breakdown
+
+| | Complexity | Reasoning |
+|---|---|---|
+| **Two pointers (in-place)** | Time O(n) | Each character visited at most once |
+| | Space O(1) | No copy of the string |
+| **Clean + reverse** | Time O(n) | Same time, but allocates |
+| | Space O(n) | Stores cleaned string |
+
+Both approaches are O(n) time, but the two-pointer version is O(1) space — no intermediate string created. Interviewers will often ask for the space-efficient version.

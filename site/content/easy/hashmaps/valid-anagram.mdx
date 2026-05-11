@@ -1,0 +1,73 @@
+---
+title: "Valid Anagram"
+lcNumber: 242
+difficulty: "easy"
+topic: "hashmaps"
+slug: "valid-anagram"
+pattern: "Frequency Count"
+timeComplexity: "O(n)"
+spaceComplexity: "O(1)"
+---
+
+## Problem
+
+Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `false` otherwise. An anagram uses exactly the same characters in the same total quantities, just rearranged.
+
+**Example:**
+```
+Input:  s = "anagram", t = "nagaram"
+Output: true
+
+Input:  s = "rat", t = "car"
+Output: false
+```
+
+**Constraints:**
+- `1 <= s.length, t.length <= 5 * 10⁴`
+- Strings consist of lowercase English letters only.
+
+---
+
+## How to Think About It
+
+Two strings are anagrams if they have exactly the same **character frequencies**. Count how many times each character appears in each string — if the counts match, they're anagrams.
+
+The key insight: you don't need to sort both strings (O(n log n)). A single frequency Map built from `s`, then decremented against `t`, handles this in O(n).
+
+**Fast early exits:**
+- If `s.length !== t.length`, immediately return `false`.
+- After building the map from `s`, walk `t` and decrement each character's count. If any count goes below zero, return `false`.
+
+**Why O(1) space?** With only 26 lowercase letters, the Map will never hold more than 26 entries — constant regardless of input size.
+
+**Pattern trigger:** "Same characters, different order" → frequency count. This exact pattern appears in Group Anagrams and Can Construct.
+
+---
+
+## Boilerplate
+
+```javascript
+const isAnagram = (s, t) => {
+  // your code here
+};
+
+console.log(isAnagram('anagram', 'nagaram')); // true
+console.log(isAnagram('rat', 'car'));          // false
+```
+
+**Key decisions to make:**
+- What do you store in the Map — character counts from `s`, `t`, or both?
+- How do you use the map to verify?
+
+---
+
+## Big-O Breakdown
+
+| | Complexity | Reasoning |
+|---|---|---|
+| **Optimized (frequency map)** | Time O(n) | Two linear passes |
+| | Space O(1) | Map bounded by 26 letters |
+| **Sorting approach** | Time O(n log n) | Sort both strings, compare |
+| | Space O(n) | Sorted copies |
+
+The frequency map is strictly better than sorting here. Sorting is intuitive but unnecessary when you realize a count comparison is sufficient.
