@@ -9,21 +9,16 @@
 // Think about what to store in the stack — the index is more useful than the temp itself.
 
 const dailyTemperatures = (temps) => {
-  // your solution here
   const ans = new Array(temps.length).fill(0);
   const stack = [];
 
   for(let i = 0; i < temps.length; i++) {
-    // condition 
-    while(stack.length !== 0 && temps[i] > temps[stack[stack.length - 1]]) {
-      // check temps
+    while(temps[i] > temps[stack[stack.length - 1]]) {
       let top = stack.pop();
       ans[top] = i - top;
     }
-
     stack.push(i);
   }
-
   return ans;
 };
 
