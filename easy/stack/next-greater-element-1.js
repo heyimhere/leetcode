@@ -17,10 +17,9 @@
 // Store results in a Map, then just look up each nums1 value.
 
 const nextGreaterElement = (nums1, nums2) => {
-  // your solution here
-  const ans = [];
   const stack = [];
   const need = new Map();
+  const ans = [];
 
   for(let i = 0; i < nums2.length; i++) {
     while(nums2[i] > stack[stack.length - 1]) {
