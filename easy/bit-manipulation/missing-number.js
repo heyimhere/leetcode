@@ -29,7 +29,6 @@
 // Space: O(1)  — just the accumulator
 
 const missingNumber = (nums) => {
-  // your code here
   let acc = nums.length;
 
   for (let i = 0; i < nums.length; i++) {
@@ -37,7 +36,7 @@ const missingNumber = (nums) => {
   }
 
   return acc;
-};
+}
 
 console.log('missing number [3,0,1]               ->', missingNumber([3, 0, 1]));               // 2
 console.log('missing number [0,1]                 ->', missingNumber([0, 1]));                  // 2
