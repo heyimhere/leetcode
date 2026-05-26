@@ -63,6 +63,26 @@
  */
 const auditBadgeLogs = (events) => {
   // your code here
+  const state = new Map();
+
+  const tailGaters = new Set();
+
+  for (const [worker, action] of events) {
+    const current = state.get(worker) ?? 'out';
+
+    if (action === 'enter' && current === 'in') tailGaters.add(worker);
+    if (action === 'exit' && current === 'out') tailGaters.add(worker);
+
+    state.set(worker, action === 'enter' ? 'in' : 'out');
+  }
+
+  const stillInside = [];
+
+  for (const [worker, s] of state) {
+    if (s === 'in') stillInside.push(worker);
+  }
+
+  return { stillInside, tailgaters: [...tailGaters] };
 };
 
 // ============ Test Cases ============
