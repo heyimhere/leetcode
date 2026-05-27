@@ -1,142 +1,149 @@
 // coding interview sample (Karat-style)
 
 /**
- * Badge Access Logs
+ * Most Co-Purchased Product Pair
  *
  * Problem Summary:
- * A secure office building requires employees to badge in when they enter
- * and badge out when they leave. Given a list of badge events, find:
- *   1. Employees currently INSIDE the building (entered but never exited,
- *      or whose last action was an enter without a matching exit).
- *   2. TAILGATERS — employees who exited without ever entering, or whose
- *      sequence of badges is mismatched (e.g. two exits in a row).
+ * An e-commerce site wants to know which two products are most often
+ * purchased together. Given a list of order line items as [orderId, productId],
+ * return the pair of products that appears together in the most orders.
  *
- * This is a classic Karat / Roblox / Asana onsite question. It tests how
- * cleanly you can model state with a HashMap and reason about real-world
- * edge cases (someone forgot to badge out, double-tap, etc.).
+ * Common interview prompt at Amazon, Shopify, and Karat clients.
  *
- * Input: Array of [employeeId, action] pairs, where action ∈ {"enter", "exit"}.
- *        Events are in chronological order.
- * Output:
- *   - { stillInside: string[], tailgaters: string[] }
+ * Input: Array of [orderId, productId] pairs.
+ *        An order may contain many products. A product may appear in many orders.
+ * Output: A pair [productA, productB] (sorted, to keep a canonical form),
+ *         along with the count of co-occurrences.
  *
  * Example:
  *   Input: [
- *     ["Alice", "enter"],
- *     ["Bob",   "enter"],
- *     ["Alice", "exit"],
- *     ["Charlie","exit"],   // Charlie never entered — tailgater
- *     ["Bob",   "exit"],
- *     ["Dana",  "enter"]    // Dana entered, never exited — still inside
+ *     ["o1", "milk"],
+ *     ["o1", "bread"],
+ *     ["o1", "eggs"],
+ *     ["o2", "milk"],
+ *     ["o2", "bread"],
+ *     ["o3", "bread"],
+ *     ["o3", "eggs"],
  *   ]
- *   Output: { stillInside: ["Dana"], tailgaters: ["Charlie"] }
+ *   Output: { pair: ["bread", "milk"], count: 2 }
+ *     - milk+bread co-occur in o1 AND o2 → 2
+ *     - milk+eggs  co-occur in o1        → 1
+ *     - bread+eggs co-occur in o1 AND o3 → 2  (tie — return either)
  *
- * Approach:
- *   Track each employee's current state in a Map: employeeId → "in" | "out".
- *   - Default state is "out" (we assume no one is inside before the log starts).
- *   - On "enter":
- *       if already "in"   → mismatched (tailgate-style, double enter)
- *       else              → set to "in"
- *   - On "exit":
- *       if state is "out" → tailgater (exited without entering)
- *       else              → set to "out"
- *   At the end, anyone whose state is "in" is still inside the building.
+ * Approach (Inverted Index → Pair Counting):
+ *   Step 1: Build orderId → Set<productId>.
+ *   Step 2: For each order, generate all unordered pairs of its products.
+ *           For each pair, sort the two product IDs (canonical key) and
+ *           increment a Map<"prodA|prodB", number>.
+ *   Step 3: Walk the pair-count map and track the max.
  *
- * Why a Map:
- *   - O(1) lookup and update per event.
- *   - Lets us track each employee independently regardless of event order.
+ * Why canonical (sorted) keys:
+ *   ["milk","bread"] and ["bread","milk"] are the same pair — sorting
+ *   guarantees one bucket per logical pair regardless of order in the order.
  *
- * Time:  O(E)  — single pass through events
- * Space: O(N)  — one entry per unique employee
+ * Time:
+ *   - Build order map: O(E)         where E = number of line items
+ *   - Pair generation: O(sum of K_i² ) where K_i = items in order i
+ *   - Find max:        O(P)         where P = unique pairs
+ *   Total worst case: O(E + sum(K_i²))
+ * Space: O(E + P)
  *
  * Edge Cases:
- *   - Employee enters twice in a row without exiting → flag as mismatch
- *   - Employee exits without ever entering          → tailgater
- *   - Empty input                                   → both lists empty
- *   - Same employee appears many times              → final state is what matters
+ *   - Order with only 1 product → no pairs to generate
+ *   - Empty input               → return null / { pair: null, count: 0 }
+ *   - Ties                      → return any one of the tied pairs (document this)
+ *   - Same product listed twice in an order → Set dedups
  */
 
 /**
- * Audits a list of badge events and returns who's still inside and who tailgated.
- * @param {[string, "enter" | "exit"][]} events
- * @returns {{ stillInside: string[], tailgaters: string[] }}
+ * Finds the product pair that appears in the most orders together.
+ * @param {string[][]} lineItems - Array of [orderId, productId] pairs
+ * @returns {{ pair: [string, string] | null, count: number }}
  */
-const auditBadgeLogs = (events) => {
-  // state: employeeId -> 'in' | 'out'
-  // We use semantic state values ('in'/'out') instead of the raw action
-  // strings ('enter'/'exit'). It's a small thing, but it makes the
-  // branching read as "is this person currently inside?" rather than
-  // "what was their last action?" — same data, clearer intent.
-  const state = new Map();
+const mostCoPurchasedPair = (lineItems) => {
+  // your code here
+  const orderItems = new Map();
 
-  // Set, not array — if the same person tailgates twice we still only
-  // want to report them once. (Judgment call; you could keep duplicates
-  // if you wanted every incident.)
-  const tailgaters = new Set();
+  for (const [orderId, item] of lineItems) {
+    if (!orderItems.has(orderId)) {
+      orderItems.set(orderId, new Set());
+    }
 
-  for (const [worker, action] of events) {
-    // ?? 'out' — if we've never seen this worker, treat them as outside.
-    // This is what makes "Charlie exits without ever entering" detectable:
-    // current = 'out', action = 'exit' → tailgate.
-    const current = state.get(worker) ?? 'out';
-
-    // Two tailgate conditions, mirrored:
-    //   already inside + tries to enter   → double-enter
-    //   already outside + tries to exit   → ghost exit
-    if (action === 'enter' && current === 'in')  tailgaters.add(worker);
-    if (action === 'exit'  && current === 'out') tailgaters.add(worker);
-
-    // Update state regardless — the badge event happened, log reflects it.
-    // (A real badge reader still records the swipe even if the door beeps.)
-    state.set(worker, action === 'enter' ? 'in' : 'out');
+    orderItems.get(orderId).add(item);
   }
 
-  // Final sweep: whoever ended in 'in' state is still in the building.
-  const stillInside = [];
-  for (const [worker, s] of state) {
-    if (s === 'in') stillInside.push(worker);
+  const pairCounts = new Map();
+
+  for (const items of orderItems.values()) {
+    const arr = [...items];
+
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = i + 1; j < arr.length; j++) {
+        const a = arr[i];
+        const b = arr[j];
+        const key = a < b ? `${a}|${b}` : `${b}|${a}`;
+
+        pairCounts.set(key, (pairCounts.get(key) ?? 0) + 1);
+      }
+    }
   }
 
-  return { stillInside, tailgaters: [...tailgaters] };
+  let bestPair = null;
+  let bestCount = 0;
+
+  for (const [key, count] of pairCounts) {
+    if (count > bestCount) {
+      bestCount = count;
+      bestPair = key.split('|');
+    }
+  }
+
+  return { pair: bestPair, count: bestCount };
 };
 
 // ============ Test Cases ============
 
-console.log('=== Badge Access Logs ===\n');
+console.log('=== Most Co-Purchased Pair ===\n');
 
-console.log('Test 1 — Mixed normal + edge cases:');
-console.log(auditBadgeLogs([
-  ['Alice', 'enter'],
-  ['Bob', 'enter'],
-  ['Alice', 'exit'],
-  ['Charlie', 'exit'],   // tailgater
-  ['Bob', 'exit'],
-  ['Dana', 'enter'],     // still inside
+console.log('Test 1 — Basic grocery orders:');
+console.log(mostCoPurchasedPair([
+  ['o1', 'milk'],
+  ['o1', 'bread'],
+  ['o1', 'eggs'],
+  ['o2', 'milk'],
+  ['o2', 'bread'],
+  ['o3', 'bread'],
+  ['o3', 'eggs'],
 ]));
-// Expected: { stillInside: ['Dana'], tailgaters: ['Charlie'] }
+// Expected: { pair: ['bread', 'milk'] OR ['bread', 'eggs'], count: 2 }
 
-console.log('\nTest 2 — Everyone properly badged out:');
-console.log(auditBadgeLogs([
-  ['A', 'enter'], ['A', 'exit'],
-  ['B', 'enter'], ['B', 'exit'],
+console.log('\nTest 2 — Clear single winner:');
+console.log(mostCoPurchasedPair([
+  ['a', 'x'], ['a', 'y'],
+  ['b', 'x'], ['b', 'y'],
+  ['c', 'x'], ['c', 'y'],
+  ['d', 'z'], ['d', 'y'],
 ]));
-// Expected: { stillInside: [], tailgaters: [] }
+// Expected: { pair: ['x', 'y'], count: 3 }
 
-console.log('\nTest 3 — Double enter (mismatch):');
-console.log(auditBadgeLogs([
-  ['A', 'enter'],
-  ['A', 'enter'],   // already inside — flag as tailgater/mismatch
-  ['A', 'exit'],
+console.log('\nTest 3 — Single-item orders only (no pairs):');
+console.log(mostCoPurchasedPair([
+  ['o1', 'milk'],
+  ['o2', 'bread'],
+  ['o3', 'eggs'],
 ]));
-// Expected: A flagged as a mismatch (your choice how to surface it)
+// Expected: { pair: null, count: 0 }
 
-console.log('\nTest 4 — Empty log:');
-console.log(auditBadgeLogs([]));
-// Expected: { stillInside: [], tailgaters: [] }
+console.log('\nTest 4 — Empty input:');
+console.log(mostCoPurchasedPair([]));
+// Expected: { pair: null, count: 0 }
 
-console.log('\nTest 5 — Only tailgaters:');
-console.log(auditBadgeLogs([
-  ['X', 'exit'],
-  ['Y', 'exit'],
+console.log('\nTest 5 — Duplicate product in one order:');
+console.log(mostCoPurchasedPair([
+  ['o1', 'milk'],
+  ['o1', 'milk'],   // duplicate — should be deduped
+  ['o1', 'bread'],
+  ['o2', 'milk'],
+  ['o2', 'bread'],
 ]));
-// Expected: { stillInside: [], tailgaters: ['X', 'Y'] }
+// Expected: { pair: ['bread', 'milk'], count: 2 }

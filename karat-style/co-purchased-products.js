@@ -62,6 +62,41 @@
  */
 const mostCoPurchasedPair = (lineItems) => {
   // your code here
+  const itemList = new Map();
+
+  for (const [item, product] of lineItems) {
+    if (!itemList.has(item)) {
+      itemList.set(item, new Set());
+    }
+
+    itemList.get(item).add(product);
+  }
+
+  const pairCount = new Map();
+  for (const products of itemList.values()) {
+    const arr = [...products];
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = i + 1; j < arr.length; j++) {
+        const a = arr[i];
+        const b = arr[j];
+
+        const key = a < b ? `${a}|${b}` : `${b}|${a}`;
+
+        pairCount.set(key, (pairCount.get(key) ?? 0) + 1);
+      }
+    }
+  }
+
+  let count = 0;
+  let bestCount = null;
+  for (const [item, c] of pairCount) {
+    if (c > count) {
+      count = c;
+      bestCount = item.split('|');
+    }
+  }
+
+  return { pair: bestCount, count };
 };
 
 // ============ Test Cases ============
