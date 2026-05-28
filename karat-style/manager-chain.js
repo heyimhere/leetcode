@@ -72,6 +72,12 @@
  */
 const buildOrgMap = (pairs) => {
   // your code here
+  const map = new Map();
+
+  for (const [employee, manager] of pairs) {
+    map.set(employee, manager);
+  }
+  return map;
 };
 
 /**
@@ -82,6 +88,18 @@ const buildOrgMap = (pairs) => {
  */
 const managerChain = (pairs, employee) => {
   // your code here
+  const map = buildOrgMap(pairs);
+  let current = employee;
+  const chain = [];
+  const known = pairs.some(([e, m]) => e === employee || m === employee);
+  if (!known) return [];
+
+  while (current !== undefined) {
+    chain.push(current);
+    current = map.get(current);
+  }
+
+  return chain;
 };
 
 /**
@@ -93,6 +111,15 @@ const managerChain = (pairs, employee) => {
  */
 const lowestCommonManager = (pairs, employeeA, employeeB) => {
   // your code here
+  const chainA = managerChain(pairs, employeeA);
+  const chainB = managerChain(pairs, employeeB);
+  const setA = new Set(chainA);
+
+  for (const each of chainB) {
+    if (setA.has(each)) return each;
+  }
+
+  return null;
 };
 
 // ============ Test Cases ============

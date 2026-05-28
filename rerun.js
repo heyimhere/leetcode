@@ -1,149 +1,171 @@
 // coding interview sample (Karat-style)
 
 /**
- * Most Co-Purchased Product Pair
+ * Manager Chain & Lowest Common Manager
  *
  * Problem Summary:
- * An e-commerce site wants to know which two products are most often
- * purchased together. Given a list of order line items as [orderId, productId],
- * return the pair of products that appears together in the most orders.
+ * Given a list of [employee, manager] pairs representing reporting relationships,
+ * build two utilities:
+ *   1. managerChain(pairs, employee)
+ *      → return the chain of command from `employee` up to the CEO
+ *        (i.e. the root of the org tree). Includes `employee` at the start.
+ *   2. lowestCommonManager(pairs, employeeA, employeeB)
+ *      → return the lowest (most-specific) manager who has both employees
+ *        somewhere beneath them. This is the org-chart version of LCA.
  *
- * Common interview prompt at Amazon, Shopify, and Karat clients.
+ * Karat asks variants of this constantly. It's also conceptually the same
+ * as LC #236 Lowest Common Ancestor of a Binary Tree, but on an org tree
+ * represented as child → parent edges.
  *
- * Input: Array of [orderId, productId] pairs.
- *        An order may contain many products. A product may appear in many orders.
- * Output: A pair [productA, productB] (sorted, to keep a canonical form),
- *         along with the count of co-occurrences.
+ * Input: Array of [employee, manager] pairs. The CEO has no manager and
+ *        does NOT appear as the first element in any pair.
  *
- * Example:
- *   Input: [
- *     ["o1", "milk"],
- *     ["o1", "bread"],
- *     ["o1", "eggs"],
- *     ["o2", "milk"],
- *     ["o2", "bread"],
- *     ["o3", "bread"],
- *     ["o3", "eggs"],
+ * Example org:
+ *           CEO
+ *          /   \
+ *        VP1   VP2
+ *        / \     \
+ *      Mgr1 Mgr2  Mgr3
+ *      /    /  \    \
+ *    Alice Bob Carol Dana
+ *
+ *   pairs = [
+ *     ["VP1","CEO"], ["VP2","CEO"],
+ *     ["Mgr1","VP1"], ["Mgr2","VP1"], ["Mgr3","VP2"],
+ *     ["Alice","Mgr1"], ["Bob","Mgr2"], ["Carol","Mgr2"], ["Dana","Mgr3"],
  *   ]
- *   Output: { pair: ["bread", "milk"], count: 2 }
- *     - milk+bread co-occur in o1 AND o2 → 2
- *     - milk+eggs  co-occur in o1        → 1
- *     - bread+eggs co-occur in o1 AND o3 → 2  (tie — return either)
  *
- * Approach (Inverted Index → Pair Counting):
- *   Step 1: Build orderId → Set<productId>.
- *   Step 2: For each order, generate all unordered pairs of its products.
- *           For each pair, sort the two product IDs (canonical key) and
- *           increment a Map<"prodA|prodB", number>.
- *   Step 3: Walk the pair-count map and track the max.
+ *   managerChain(pairs, "Alice")          → ["Alice", "Mgr1", "VP1", "CEO"]
+ *   lowestCommonManager(pairs, "Bob","Carol")  → "Mgr2"
+ *   lowestCommonManager(pairs, "Alice","Bob")  → "VP1"
+ *   lowestCommonManager(pairs, "Alice","Dana") → "CEO"
  *
- * Why canonical (sorted) keys:
- *   ["milk","bread"] and ["bread","milk"] are the same pair — sorting
- *   guarantees one bucket per logical pair regardless of order in the order.
+ * Approach:
+ *   Build a Map<employee, manager>. Then:
+ *   - managerChain: walk parent pointers until you hit someone with no manager.
+ *   - lowestCommonManager:
+ *       a) Get the full chain of A (a list from A → ... → CEO).
+ *       b) Stuff that chain into a Set for O(1) lookup.
+ *       c) Walk B's chain upward; the first ancestor present in A's Set is the LCM.
+ *
+ * Why this works:
+ *   Any common manager must appear in BOTH chains. The first one encountered
+ *   while walking B upward is guaranteed to be the lowest, because we walk
+ *   B from the bottom up.
  *
  * Time:
- *   - Build order map: O(E)         where E = number of line items
- *   - Pair generation: O(sum of K_i² ) where K_i = items in order i
- *   - Find max:        O(P)         where P = unique pairs
- *   Total worst case: O(E + sum(K_i²))
- * Space: O(E + P)
+ *   - managerChain:        O(H)  where H = tree height
+ *   - lowestCommonManager: O(H)  (build set + walk)
+ * Space: O(N) for the parent map + O(H) for the chain.
  *
  * Edge Cases:
- *   - Order with only 1 product → no pairs to generate
- *   - Empty input               → return null / { pair: null, count: 0 }
- *   - Ties                      → return any one of the tied pairs (document this)
- *   - Same product listed twice in an order → Set dedups
+ *   - Employee not in graph              → empty chain / null LCM
+ *   - One employee is the other's manager → that employee is the LCM itself
+ *   - Same employee twice                → that employee is the LCM
+ *   - CEO has no manager                 → chain ends at CEO
  */
 
 /**
- * Finds the product pair that appears in the most orders together.
- * @param {string[][]} lineItems - Array of [orderId, productId] pairs
- * @returns {{ pair: [string, string] | null, count: number }}
+ * Builds a Map of employee → direct manager.
+ * @param {string[][]} pairs - Array of [employee, manager] pairs
+ * @returns {Map<string, string>}
  */
-const mostCoPurchasedPair = (lineItems) => {
+const buildOrgMap = (pairs) => {
   // your code here
-  const orderItems = new Map();
+  const map = new Map();
 
-  for (const [orderId, item] of lineItems) {
-    if (!orderItems.has(orderId)) {
-      orderItems.set(orderId, new Set());
-    }
-
-    orderItems.get(orderId).add(item);
+  for (const [employee, manager] of pairs) {
+    map.set(employee, manager);
   }
 
-  const pairCounts = new Map();
+  return map;
+};
 
-  for (const items of orderItems.values()) {
-    const arr = [...items];
-
-    for (let i = 0; i < arr.length; i++) {
-      for (let j = i + 1; j < arr.length; j++) {
-        const a = arr[i];
-        const b = arr[j];
-        const key = a < b ? `${a}|${b}` : `${b}|${a}`;
-
-        pairCounts.set(key, (pairCounts.get(key) ?? 0) + 1);
-      }
-    }
+/**
+ * Returns the chain of command from employee up to the CEO (inclusive).
+ * @param {string[][]} pairs
+ * @param {string} employee
+ * @returns {string[]}
+ */
+const managerChain = (pairs, employee) => {
+  // your code here
+  const map = buildOrgMap(pairs);
+  let current = employee;
+  const chain = [];
+  const known = pairs.some(([e, m]) => e === employee || m === employee);
+  if (!known) return []
+  while (current !== undefined) {
+    chain.push(current);
+    current = map.get(current);
   }
 
-  let bestPair = null;
-  let bestCount = 0;
+  return chain;
+};
 
-  for (const [key, count] of pairCounts) {
-    if (count > bestCount) {
-      bestCount = count;
-      bestPair = key.split('|');
-    }
+/**
+ * Returns the lowest (most specific) manager that has both employees beneath them.
+ * @param {string[][]} pairs
+ * @param {string} employeeA
+ * @param {string} employeeB
+ * @returns {string | null}
+ */
+const lowestCommonManager = (pairs, employeeA, employeeB) => {
+  // your code here
+  const map = buildOrgMap(pairs);
+  const chainA = managerChain(pairs, employeeA);
+  const chainB = managerChain(pairs, employeeB);
+  const setA = new Set(chainA);
+
+  let current = chainB[0];
+  while (current !== undefined) {
+    if (setA.has(current)) current;
+    current = map.get(current);
   }
 
-  return { pair: bestPair, count: bestCount };
+  return null;
 };
 
 // ============ Test Cases ============
 
-console.log('=== Most Co-Purchased Pair ===\n');
+const org = [
+  ['VP1', 'CEO'],
+  ['VP2', 'CEO'],
+  ['Mgr1', 'VP1'],
+  ['Mgr2', 'VP1'],
+  ['Mgr3', 'VP2'],
+  ['Alice', 'Mgr1'],
+  ['Bob', 'Mgr2'],
+  ['Carol', 'Mgr2'],
+  ['Dana', 'Mgr3'],
+];
 
-console.log('Test 1 — Basic grocery orders:');
-console.log(mostCoPurchasedPair([
-  ['o1', 'milk'],
-  ['o1', 'bread'],
-  ['o1', 'eggs'],
-  ['o2', 'milk'],
-  ['o2', 'bread'],
-  ['o3', 'bread'],
-  ['o3', 'eggs'],
-]));
-// Expected: { pair: ['bread', 'milk'] OR ['bread', 'eggs'], count: 2 }
+console.log('=== Manager Chain & LCM ===\n');
 
-console.log('\nTest 2 — Clear single winner:');
-console.log(mostCoPurchasedPair([
-  ['a', 'x'], ['a', 'y'],
-  ['b', 'x'], ['b', 'y'],
-  ['c', 'x'], ['c', 'y'],
-  ['d', 'z'], ['d', 'y'],
-]));
-// Expected: { pair: ['x', 'y'], count: 3 }
+console.log('Test 1 — Chain for Alice:');
+console.log(managerChain(org, 'Alice'));
+// Expected: ['Alice', 'Mgr1', 'VP1', 'CEO']
 
-console.log('\nTest 3 — Single-item orders only (no pairs):');
-console.log(mostCoPurchasedPair([
-  ['o1', 'milk'],
-  ['o2', 'bread'],
-  ['o3', 'eggs'],
-]));
-// Expected: { pair: null, count: 0 }
+console.log('\nTest 2 — Chain for CEO:');
+console.log(managerChain(org, 'CEO'));
+// Expected: ['CEO']
 
-console.log('\nTest 4 — Empty input:');
-console.log(mostCoPurchasedPair([]));
-// Expected: { pair: null, count: 0 }
+console.log('\nTest 3 — LCM of Bob & Carol (same manager):');
+console.log(lowestCommonManager(org, 'Bob', 'Carol'));
+// Expected: 'Mgr2'
 
-console.log('\nTest 5 — Duplicate product in one order:');
-console.log(mostCoPurchasedPair([
-  ['o1', 'milk'],
-  ['o1', 'milk'],   // duplicate — should be deduped
-  ['o1', 'bread'],
-  ['o2', 'milk'],
-  ['o2', 'bread'],
-]));
-// Expected: { pair: ['bread', 'milk'], count: 2 }
+console.log('\nTest 4 — LCM of Alice & Bob (different subtrees, same VP):');
+console.log(lowestCommonManager(org, 'Alice', 'Bob'));
+// Expected: 'VP1'
+
+console.log('\nTest 5 — LCM of Alice & Dana (different VPs):');
+console.log(lowestCommonManager(org, 'Alice', 'Dana'));
+// Expected: 'CEO'
+
+console.log('\nTest 6 — LCM where one is the other\'s manager:');
+console.log(lowestCommonManager(org, 'Mgr1', 'Alice'));
+// Expected: 'Mgr1'
+
+console.log('\nTest 7 — Unknown employee:');
+console.log(managerChain(org, 'Ghost'));
+console.log(lowestCommonManager(org, 'Ghost', 'Alice'));
+// Expected: [] and null
