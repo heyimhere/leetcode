@@ -1,171 +1,163 @@
 // coding interview sample (Karat-style)
 
 /**
- * Manager Chain & Lowest Common Manager
+ * Mutual Friends & Friends of Friends
  *
  * Problem Summary:
- * Given a list of [employee, manager] pairs representing reporting relationships,
- * build two utilities:
- *   1. managerChain(pairs, employee)
- *      → return the chain of command from `employee` up to the CEO
- *        (i.e. the root of the org tree). Includes `employee` at the start.
- *   2. lowestCommonManager(pairs, employeeA, employeeB)
- *      → return the lowest (most-specific) manager who has both employees
- *        somewhere beneath them. This is the org-chart version of LCA.
+ * A social network is represented as a list of friendship pairs (undirected).
+ * Build two utilities:
+ *   1. mutualFriends(pairs, userA, userB)
+ *      → return the list of users who are friends with BOTH userA and userB.
+ *   2. friendsOfFriends(pairs, user)
+ *      → return the list of users who are friends-of-friends (degree-2)
+ *        but NOT already direct friends of `user`, and NOT `user` themselves.
+ *        These are classic "People You May Know" recommendations.
  *
- * Karat asks variants of this constantly. It's also conceptually the same
- * as LC #236 Lowest Common Ancestor of a Binary Tree, but on an org tree
- * represented as child → parent edges.
+ * This is a Meta / LinkedIn / Karat staple.
  *
- * Input: Array of [employee, manager] pairs. The CEO has no manager and
- *        does NOT appear as the first element in any pair.
+ * Input: Array of [userA, userB] friendship pairs. Friendship is symmetric:
+ *        ["Alice", "Bob"] means Alice ↔ Bob.
  *
- * Example org:
- *           CEO
- *          /   \
- *        VP1   VP2
- *        / \     \
- *      Mgr1 Mgr2  Mgr3
- *      /    /  \    \
- *    Alice Bob Carol Dana
+ * Example friendship graph:
+ *   Alice  — Bob
+ *   Alice  — Charlie
+ *   Bob    — Charlie
+ *   Bob    — Dana
+ *   Charlie— Dana
+ *   Dana   — Eve
  *
- *   pairs = [
- *     ["VP1","CEO"], ["VP2","CEO"],
- *     ["Mgr1","VP1"], ["Mgr2","VP1"], ["Mgr3","VP2"],
- *     ["Alice","Mgr1"], ["Bob","Mgr2"], ["Carol","Mgr2"], ["Dana","Mgr3"],
- *   ]
+ *   mutualFriends(pairs, "Alice", "Dana")  → ["Bob", "Charlie"]
+ *     (both are friends with Alice AND Dana)
  *
- *   managerChain(pairs, "Alice")          → ["Alice", "Mgr1", "VP1", "CEO"]
- *   lowestCommonManager(pairs, "Bob","Carol")  → "Mgr2"
- *   lowestCommonManager(pairs, "Alice","Bob")  → "VP1"
- *   lowestCommonManager(pairs, "Alice","Dana") → "CEO"
+ *   friendsOfFriends(pairs, "Alice")       → ["Dana"]
+ *     (Dana is reachable in 2 hops via Bob or Charlie, and isn't already
+ *      Alice's direct friend. Eve is degree 3 — too far.)
  *
  * Approach:
- *   Build a Map<employee, manager>. Then:
- *   - managerChain: walk parent pointers until you hit someone with no manager.
- *   - lowestCommonManager:
- *       a) Get the full chain of A (a list from A → ... → CEO).
- *       b) Stuff that chain into a Set for O(1) lookup.
- *       c) Walk B's chain upward; the first ancestor present in A's Set is the LCM.
+ *   Step 1: Build an adjacency Map<string, Set<string>>.
+ *           For each pair [a, b], add b to a's set AND a to b's set.
+ *   Step 2 (mutualFriends):
+ *           Take the intersection of friends(userA) and friends(userB).
+ *           Iterate the smaller set, check membership in the larger.
+ *   Step 3 (friendsOfFriends):
+ *           For each direct friend F of `user`, walk F's friends.
+ *           Add anyone who is NOT `user` and NOT already a direct friend.
+ *           Dedup via a Set.
  *
- * Why this works:
- *   Any common manager must appear in BOTH chains. The first one encountered
- *   while walking B upward is guaranteed to be the lowest, because we walk
- *   B from the bottom up.
+ * Why Map<string, Set<string>>:
+ *   - O(1) friendship lookup ("is X friends with Y?")
+ *   - Set automatically dedups if a pair appears twice in input.
  *
  * Time:
- *   - managerChain:        O(H)  where H = tree height
- *   - lowestCommonManager: O(H)  (build set + walk)
- * Space: O(N) for the parent map + O(H) for the chain.
+ *   - Build graph:      O(P)  where P = number of pairs
+ *   - mutualFriends:    O(min(|A|, |B|))
+ *   - friendsOfFriends: O(F * Avg) where F = direct friends, Avg = avg friends per friend
+ * Space: O(N + P) for the adjacency graph.
  *
  * Edge Cases:
- *   - Employee not in graph              → empty chain / null LCM
- *   - One employee is the other's manager → that employee is the LCM itself
- *   - Same employee twice                → that employee is the LCM
- *   - CEO has no manager                 → chain ends at CEO
+ *   - User has no friends                → both functions return []
+ *   - User doesn't exist in graph        → return []
+ *   - Duplicate pairs in input           → Set dedups automatically
+ *   - Self-loops ["A","A"]               → ignore (or include? keep simple: ignore)
  */
 
 /**
- * Builds a Map of employee → direct manager.
- * @param {string[][]} pairs - Array of [employee, manager] pairs
- * @returns {Map<string, string>}
+ * Builds an undirected friendship graph.
+ * @param {string[][]} pairs
+ * @returns {Map<string, Set<string>>}
  */
-const buildOrgMap = (pairs) => {
+const buildFriendshipGraph = (pairs) => {
   // your code here
   const map = new Map();
 
-  for (const [employee, manager] of pairs) {
-    map.set(employee, manager);
+  for (const [userA, userB] of pairs) {
+    if (!map.has(userA)) map.set(userA, new Set());
+    if (!map.has(userB)) map.set(userB, new Set());
+    map.get(userA).add(userB);
+    map.get(userB).add(userA);
   }
-
   return map;
 };
 
 /**
- * Returns the chain of command from employee up to the CEO (inclusive).
+ * Returns users who are friends with both userA and userB.
  * @param {string[][]} pairs
- * @param {string} employee
+ * @param {string} userA
+ * @param {string} userB
  * @returns {string[]}
  */
-const managerChain = (pairs, employee) => {
+const mutualFriends = (pairs, userA, userB) => {
   // your code here
-  const map = buildOrgMap(pairs);
-  let current = employee;
-  const chain = [];
-  const known = pairs.some(([e, m]) => e === employee || m === employee);
-  if (!known) return []
-  while (current !== undefined) {
-    chain.push(current);
-    current = map.get(current);
+  const map = buildFriendshipGraph(pairs);
+  if (!map.has(userA) || !map.has(userB)) return [];
+  const setA = map.get(userA);
+  const setB = map.get(userB);
+
+  const [smaller, larger] = setA.size <= setB.size ? [setA, setB] : [setB, setA];
+
+  const ans = [];
+
+  for (const user of smaller) {
+    if (larger.has(user)) ans.push(user);
   }
 
-  return chain;
+  return ans;
 };
 
 /**
- * Returns the lowest (most specific) manager that has both employees beneath them.
+ * Returns "People You May Know" — degree-2 connections, excluding
+ * direct friends and the user themselves.
  * @param {string[][]} pairs
- * @param {string} employeeA
- * @param {string} employeeB
- * @returns {string | null}
+ * @param {string} user
+ * @returns {string[]}
  */
-const lowestCommonManager = (pairs, employeeA, employeeB) => {
+const friendsOfFriends = (pairs, user) => {
   // your code here
-  const map = buildOrgMap(pairs);
-  const chainA = managerChain(pairs, employeeA);
-  const chainB = managerChain(pairs, employeeB);
-  const setA = new Set(chainA);
+  const graph = buildFriendshipGraph(pairs);
+  if (!graph.has(user)) return [];
+  const directs = graph.get(user);
+  const result = new Set();
 
-  let current = chainB[0];
-  while (current !== undefined) {
-    if (setA.has(current)) current;
-    current = map.get(current);
+  for (const friend of directs) {
+    for (const fof of graph.get(friend)) {
+      if (fof !== user && !directs.has(fof)) {
+        result.add(fof);
+      }
+    }
   }
-
-  return null;
+  return Array.from(result);
 };
 
 // ============ Test Cases ============
 
-const org = [
-  ['VP1', 'CEO'],
-  ['VP2', 'CEO'],
-  ['Mgr1', 'VP1'],
-  ['Mgr2', 'VP1'],
-  ['Mgr3', 'VP2'],
-  ['Alice', 'Mgr1'],
-  ['Bob', 'Mgr2'],
-  ['Carol', 'Mgr2'],
-  ['Dana', 'Mgr3'],
+const friendships = [
+  ['Alice', 'Bob'],
+  ['Alice', 'Charlie'],
+  ['Bob', 'Charlie'],
+  ['Bob', 'Dana'],
+  ['Charlie', 'Dana'],
+  ['Dana', 'Eve'],
 ];
 
-console.log('=== Manager Chain & LCM ===\n');
+console.log('=== Mutual Friends & FoF ===\n');
 
-console.log('Test 1 — Chain for Alice:');
-console.log(managerChain(org, 'Alice'));
-// Expected: ['Alice', 'Mgr1', 'VP1', 'CEO']
+console.log('Test 1 — Mutual friends Alice & Dana:');
+console.log(mutualFriends(friendships, 'Alice', 'Dana'));
+// Expected: ['Bob', 'Charlie']  (order may vary)
 
-console.log('\nTest 2 — Chain for CEO:');
-console.log(managerChain(org, 'CEO'));
-// Expected: ['CEO']
+console.log('\nTest 2 — Mutual friends Alice & Eve:');
+console.log(mutualFriends(friendships, 'Alice', 'Eve'));
+// Expected: []   (no overlap)
 
-console.log('\nTest 3 — LCM of Bob & Carol (same manager):');
-console.log(lowestCommonManager(org, 'Bob', 'Carol'));
-// Expected: 'Mgr2'
+console.log('\nTest 3 — Friends-of-friends for Alice:');
+console.log(friendsOfFriends(friendships, 'Alice'));
+// Expected: ['Dana']   (Eve is too far; Bob/Charlie are direct)
 
-console.log('\nTest 4 — LCM of Alice & Bob (different subtrees, same VP):');
-console.log(lowestCommonManager(org, 'Alice', 'Bob'));
-// Expected: 'VP1'
+console.log('\nTest 4 — Friends-of-friends for Eve:');
+console.log(friendsOfFriends(friendships, 'Eve'));
+// Expected: ['Bob', 'Charlie']  (reachable via Dana)
 
-console.log('\nTest 5 — LCM of Alice & Dana (different VPs):');
-console.log(lowestCommonManager(org, 'Alice', 'Dana'));
-// Expected: 'CEO'
-
-console.log('\nTest 6 — LCM where one is the other\'s manager:');
-console.log(lowestCommonManager(org, 'Mgr1', 'Alice'));
-// Expected: 'Mgr1'
-
-console.log('\nTest 7 — Unknown employee:');
-console.log(managerChain(org, 'Ghost'));
-console.log(lowestCommonManager(org, 'Ghost', 'Alice'));
-// Expected: [] and null
+console.log('\nTest 5 — User with no friends:');
+console.log(mutualFriends(friendships, 'Alice', 'Nobody'));
+console.log(friendsOfFriends(friendships, 'Nobody'));
+// Expected: [] and []
