@@ -68,6 +68,14 @@
  */
 const buildFriendshipGraph = (pairs) => {
   // your code here
+  const map = new Map();
+  for (const [userA, userB] of pairs) {
+    if (!map.has(userA)) map.set(userA, new Set());
+    if (!map.has(userB)) map.set(userB, new Set());
+    map.get(userA).add(userB);
+    map.get(userB).add(userA);
+  }
+  return map;
 };
 
 /**
@@ -79,6 +87,18 @@ const buildFriendshipGraph = (pairs) => {
  */
 const mutualFriends = (pairs, userA, userB) => {
   // your code here
+  const map = buildFriendshipGraph(pairs);
+  if (!map.has(userA) || !map.has(userB)) return [];
+  const setA = map.get(userA);
+  const setB = map.get(userB);
+
+  const [smaller, larger] = setA.size <= setB.size ? [setA, setB] : [setB, setA];
+  const ans = [];
+
+  for (const user of smaller) {
+    if (larger.has(user)) ans.push(user);
+  }
+  return ans;
 };
 
 /**
@@ -90,6 +110,19 @@ const mutualFriends = (pairs, userA, userB) => {
  */
 const friendsOfFriends = (pairs, user) => {
   // your code here
+  const graph = buildFriendshipGraph(pairs);
+  if (!graph.has(user)) return [];
+  const directs = graph.get(user);
+  const result = new Set();
+
+  for (const friend of directs) {
+    for (const fof of graph.get(friend)) {
+      if (fof !== user && !directs.has(fof)) {
+        result.add(fof);
+      }
+    }
+  }
+  return Array.from(result);
 };
 
 // ============ Test Cases ============
