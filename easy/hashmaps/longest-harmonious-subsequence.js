@@ -41,6 +41,19 @@
  */
 const findLHS = (nums) => {
   // your code here
+  const counts = new Map();
+
+  for (const num of nums) {
+    counts.set(num, (counts.get(num) ?? 0) + 1);
+  }
+
+  let best = 0;
+  for (const [n, freq] of counts) {
+    if (counts.has(n + 1)) {
+      best = Math.max(best, freq + counts.get(n + 1));
+    }
+  }
+  return best;
 };
 
 console.log('=== LC #594 Longest Harmonious Subsequence ===\n');
