@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["_helpers/**/*.ts", "**/*.solution.ts"]
+}
