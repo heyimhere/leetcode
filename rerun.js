@@ -1,74 +1,97 @@
 // TODO: implement
-// LC #594 — Longest Harmonious Subsequence
+// LC #438 — Find All Anagrams in a String
 //
-// A "harmonious" array is one where max - min === 1 (exactly).
-// Given an integer array `nums`, return the length of its LONGEST
-// harmonious SUBSEQUENCE (elements need not be contiguous).
+// Given strings s and p, return an array of the START INDICES of all
+// substrings of s that are anagrams of p.
 //
 // Example:
-//   [1,3,2,2,5,2,3,7]   → 5   (subsequence [3,2,2,2,3] uses 3s and 2s)
-//   [1,2,3,4]           → 2   (any adjacent pair)
-//   [1,1,1,1]           → 0   (only one distinct value)
+//   s = "cbaebabacd", p = "abc"   → [0, 6]
+//     (s[0..2] = "cba" and s[6..8] = "bac" are both anagrams of "abc")
+//   s = "abab", p = "ab"          → [0, 1, 2]
 //
-// Approach (count map + scan adjacent keys):
-//   1. counts: Map<num, frequency> over nums.
-//   2. For each key k in counts:
-//        if counts has (k + 1):
-//          candidate = counts[k] + counts[k+1]
-//          best = max(best, candidate)
-//   3. Return best (0 if no such adjacent pair exists).
+// Approach (fixed-size frequency window — same as LC #567):
+//   1. Build need[26] from p. Track `required` = number of distinct chars
+//      whose counts must match.
+//   2. Slide a window of size |p| over s, maintaining have[26] and a
+//      running `matched` counter (number of buckets whose count === need).
+//   3. When matched === 26 (or your bucketed equivalent), record the
+//      window's start index.
 //
-// Why subsequence ≡ count of {k, k+1} pairs:
-//   The harmonious condition (max - min = 1) means the only two values that
-//   can appear are k and k+1. The longest subsequence using just those is
-//   ALL of them. So we scan each key's frequency plus its neighbor's.
+//   Simpler: directly compare have[] vs need[] each step — O(26) per
+//   shift, still O(n).
 //
-// Alternative: sort, then sliding window for size (max - min == 1). O(n log n)
-// time, O(1) extra. The HashMap approach is O(n) but uses O(n) space.
+// Why this beats sorting each window:
+//   Sorting per window is O(k log k) per shift, O(nk log k) overall.
+//   Frequency window is O(n).
 //
 // Time:  O(n)
-// Space: O(n)
+// Space: O(1) — two 26-int arrays + output
 //
 // Edge Cases:
-//   - All elements the same    → 0 (need two distinct adjacent values)
-//   - Length < 2               → 0
-//   - Mixed positives/negatives → still works; map handles any int
-//   - Very wide gaps           → no harmonious pair → 0
+//   - |p| > |s|             → []
+//   - s and p identical     → [0]
+//   - No anagrams           → []
+//   - Overlapping anagrams  → all start indices included (e.g. "abab","ab")
 
 /**
- * @param {number[]} nums
- * @returns {number}
+ * @param {string} s
+ * @param {string} p
+ * @returns {number[]}
  */
-const findLHS = (nums) => {
+const findAnagrams = (s, p) => {
   // your code here
-  const counts = new Map();
-  for (const num of nums) {
-    counts.set(num, (counts.get(num) ?? 0) + 1);
+  if (p.length > s.length) return [];
+
+  const need = new Map();
+  const have = new Map();
+  const k = p.length;
+
+  for (const count of p) {
+    need.set(count, (need.get(count) ?? 0) + 1);
   }
 
-  let best = 0;
-  for (const [n, freq] of counts) {
-    if (counts.has(n + 1)) {
-      best = Math.max(best, freq + counts.get(n + 1));
+  const ans = [];
+
+  for (let i = 0; i < s.length; i++) {
+    const cIn = s[i];
+    have.set(cIn, (have.get(cIn) ?? 0) + 1);
+
+    if (i >= k) {
+      const cOut = s[i - k];
+      have.set(cOut, have.get(cOut) - 1);
+      if (have.get(cOut) === 0) have.delete(cOut);
+    }
+
+    if (i >= k - 1 && mapsEqual(have, need)) {
+      ans.push(i - k + 1);
     }
   }
-  return best;
+
+  return ans;
 };
 
-console.log('=== LC #594 Longest Harmonious Subsequence ===\n');
+const mapsEqual = (a, b) => {
+  if (a.size !== b.size) return false;
+  for (const [key, value] of a) {
+    if (b.get(key) !== value) return false;
+  }
+  return true;
+};
+
+console.log('=== LC #438 Find All Anagrams in a String ===\n');
 
 console.log('Test 1:');
-console.log(findLHS([1, 3, 2, 2, 5, 2, 3, 7]));
-// Expected: 5
+console.log(findAnagrams('cbaebabacd', 'abc'));
+// Expected: [0, 6]
 
-console.log('\nTest 2:');
-console.log(findLHS([1, 2, 3, 4]));
-// Expected: 2
+console.log('\nTest 2 — overlapping:');
+console.log(findAnagrams('abab', 'ab'));
+// Expected: [0, 1, 2]
 
-console.log('\nTest 3 — all same:');
-console.log(findLHS([1, 1, 1, 1]));
-// Expected: 0
+console.log('\nTest 3 — none:');
+console.log(findAnagrams('xyz', 'abc'));
+// Expected: []
 
-console.log('\nTest 4 — negatives:');
-console.log(findLHS([-1, -1, 0]));
-// Expected: 3
+console.log('\nTest 4 — p longer:');
+console.log(findAnagrams('a', 'abc'));
+// Expected: []
