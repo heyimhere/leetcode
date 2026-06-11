@@ -39,43 +39,43 @@
  * @returns {number[]}
  */
 const findAnagrams = (s, p) => {
-  // your code here
   if (p.length > s.length) return [];
-
   const need = new Map();
   const have = new Map();
   const k = p.length;
 
-  for (const count of p) {
-    need.set(count, (need.get(count) ?? 0) + 1);
+  for (let c of p) {
+    need.set(c, (need.get(c) ?? 0) + 1);
   }
 
   const ans = [];
+  const required = need.size;
+  let matched = 0;
 
   for (let i = 0; i < s.length; i++) {
     const cIn = s[i];
     have.set(cIn, (have.get(cIn) ?? 0) + 1);
 
+    if (need.has(cIn)) {
+      if (have.get(cIn) === need.get(cIn)) matched++;
+      else if (have.get(cIn) === need.get(cIn) + 1) matched--;
+    }
+
     if (i >= k) {
       const cOut = s[i - k];
+      if (need.has(cOut)) {
+        if (have.get(cOut) === need.get(cOut)) matched--;
+        else if (have.get(cOut) === need.get(cOut) + 1) matched++;
+      }
+
       have.set(cOut, have.get(cOut) - 1);
       if (have.get(cOut) === 0) have.delete(cOut);
     }
 
-    if (i >= k - 1 && mapsEqual(have, need)) {
-      ans.push(i - k + 1);
-    }
+    if (i >= k - 1 && matched === required) ans.push(i - k + 1);
   }
 
   return ans;
-};
-
-const mapsEqual = (a, b) => {
-  if (a.size !== b.size) return false;
-  for (const [key, value] of a) {
-    if (b.get(key) !== value) return false;
-  }
-  return true;
 };
 
 console.log('=== LC #438 Find All Anagrams in a String ===\n');
