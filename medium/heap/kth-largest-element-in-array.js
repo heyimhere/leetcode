@@ -39,13 +39,33 @@
 //   - k = n           → min element
 //   - Duplicates      → still counted by occurrence (NOT distinct-k)
 
-/**
- * @param {number[]} nums
- * @param {number} k
- * @returns {number}
- */
+const MinHeap = require('../../utils/MinHeap');
+
+// Approach A — makeshift heap (sorted array)
+// Simple but O(n log n) overall due to sort on every push.
+const findKthLargestA = (nums, k) => {
+  const minHeap = [];
+
+  for (let n of nums) {
+    minHeap.push(n);
+    minHeap.sort((a, b) => a - b);
+    if (minHeap.length > k) minHeap.shift();
+  }
+
+  return minHeap[0];
+};
+
+// Approach B — real MinHeap (O(n log k))
+// push is O(log k), pop is O(log k), done n times → O(n log k)
 const findKthLargest = (nums, k) => {
-  // your code here
+  const heap = new MinHeap();
+
+  for (let n of nums) {
+    heap.push(n);
+    if (heap.size > k) heap.pop();
+  }
+
+  return heap.peek();
 };
 
 console.log('=== LC #215 Kth Largest Element in Array ===\n');

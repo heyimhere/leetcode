@@ -1,83 +1,91 @@
 // TODO: implement
-// LC #904 — Fruit Into Baskets
+// LC #215 — Kth Largest Element in an Array
 //
-// You're given an array `fruits` where fruits[i] is the type of fruit on
-// the i-th tree. You have two baskets; each basket can hold ONE type of
-// fruit, unlimited quantity. Pick fruits going left-to-right starting
-// from any tree, taking the fruit at each tree until you'd have to add
-// a third type to a basket. Return the MAX number of fruits you can pick.
-//
-// (Equivalent to: longest subarray with at most 2 distinct values.)
+// Given an integer array `nums` and an integer k, return the kth LARGEST
+// element. Note: it's the kth largest in SORTED ORDER, NOT the kth distinct
+// element.
 //
 // Example:
-//   fruits = [1,2,1]                → 3
-//   fruits = [0,1,2,2]              → 3   ([1,2,2])
-//   fruits = [1,2,3,2,2]            → 4   ([2,3,2,2])
+//   nums = [3,2,1,5,6,4], k = 2          → 5
+//   nums = [3,2,3,1,2,4,5,5,6], k = 4    → 4
 //
-// Approach (sliding window with HashMap of counts):
-//   left = 0; counts = new Map(); best = 0
-//   for right in 0..n-1:
-//     counts.set(f[right], (counts.get(f[right]) ?? 0) + 1)
-//     while counts.size > 2:
-//       counts.set(f[left], counts.get(f[left]) - 1)
-//       if counts.get(f[left]) === 0 → counts.delete(f[left])
-//       left++
-//     best = max(best, right - left + 1)
-//   return best
+// Approach 1 (min-heap of size k):
+//   for n of nums:
+//     heap.push(n)
+//     if heap.size > k → heap.pop()    // pop the smallest
+//   return heap.peek()
 //
-// Why HashMap (not 26-array):
-//   Fruit types may be arbitrary ints. The set of types in the window
-//   is at most 3 during shrinking — small but unbounded.
+//   Maintains the top-k seen so far. At the end the min of those IS the
+//   kth largest overall.
 //
-// Time:  O(n)   (each tree enters and leaves the window at most once)
-// Space: O(1)   (window always holds ≤ 3 entries)
+// Approach 2 (Quickselect — average O(n)):
+//   Partition around a pivot. If pivot's final index === n - k → return.
+//   Else recurse into the side that contains the kth largest.
+//
+//   Worst case O(n²) with bad pivots; randomize for expected O(n).
+//
+// Approach 3 (Sort + index):
+//   nums.sort((a, b) => a - b); return nums[n - k]
+//   O(n log n) — simple but slower asymptotically than heap or quickselect.
+//
+// Time:
+//   - Approach 1: O(n log k)
+//   - Approach 2: O(n) average
+//   - Approach 3: O(n log n)
+// Space: O(k) heap; O(1) quickselect; O(1) sort
 //
 // Edge Cases:
-//   - Single fruit type                → n
-//   - All distinct types               → 2 (or fewer if length < 2)
-//   - Length 0 or 1                    → that length
-//   - Two types alternating long runs  → full length
+//   - k = 1           → max element
+//   - k = n           → min element
+//   - Duplicates      → still counted by occurrence (NOT distinct-k)
+const MinHeap = require('utils/minHeap');
 
 /**
- * @param {number[]} fruits
+ * @param {number[]} nums
+ * @param {number} k
  * @returns {number}
  */
-const totalFruit = (fruits) => {
+const findKthLargestA = (nums, k) => {
   // your code here
-  let left = 0;
-  const counts = new Map();
-  let best = 0;
-
-  for (let right = 0; right < fruits.length; right++) {
-    const fruit = fruits[right];
-    counts.set(fruit, (counts.get(fruit) ?? 0) + 1);
-
-    while (counts.size > 2) {
-      const leftFruit = fruits[left];
-      counts.set(leftFruit, counts.get(leftFruit) - 1);
-      if (counts.get(leftFruit) === 0) counts.delete(leftFruit);
-      left++;
+  const minHeap = [];
+  for (let num of nums) {
+    minHeap.push(num);
+    minHeap.sort((a, b) => a - b);
+    if (minHeap.length > k) {
+      minHeap.shift();
     }
-
-    best = Math.max(best, right - left + 1);
   }
-  return best;
+  return minHeap[0];
 };
 
-console.log('=== LC #904 Fruit Into Baskets ===\n');
+const findKthLargest = (nums, k) => {
+  const heap = new MinHeap();
+
+  for (let n of nums) {
+    heap.push(n);
+
+    if (heap.size > k) {
+      heap.pop();
+    }
+  }
+
+  return heap.peek();
+}
+
+console.log('=== LC #215 Kth Largest Element in Array ===\n');
 
 console.log('Test 1:');
-console.log(totalFruit([1, 2, 1]));
-// Expected: 3
+console.log(findKthLargest([3, 2, 1, 5, 6, 4], 2));
+// Expected: 5
 
-console.log('\nTest 2:');
-console.log(totalFruit([0, 1, 2, 2]));
-// Expected: 3
-
-console.log('\nTest 3:');
-console.log(totalFruit([1, 2, 3, 2, 2]));
+console.log('\nTest 2 — duplicates count:');
+console.log(findKthLargest([3, 2, 3, 1, 2, 4, 5, 5, 6], 4));
 // Expected: 4
 
-console.log('\nTest 4 — all same:');
-console.log(totalFruit([5, 5, 5, 5]));
-// Expected: 4
+console.log('\nTest 3 — k=1:');
+console.log(findKthLargest([1], 1));
+// Expected: 1
+
+console.log('\nTest 4 — k = n:');
+console.log(findKthLargest([7, 6, 5, 4, 3, 2, 1], 7));
+// Expected: 1
