@@ -43,7 +43,26 @@
  * @returns {number}
  */
 const totalFruit = (fruits) => {
-  // your code here
+  const counts = new Map();
+  let best = 0;
+  let left = 0;
+
+  for (let right = 0; right < fruits.length; right++) {
+    const fruit = fruits[right];
+    counts.set(fruit, (counts.get(fruit) ?? 0) + 1);
+
+    while (counts.size > 2) {
+      const leftFruit = fruits[left];
+      counts.set(leftFruit, counts.get(leftFruit) - 1);
+
+      if (counts.get(leftFruit) === 0) counts.delete(leftFruit);
+      left++;
+    }
+
+    best = Math.max(best, right - left + 1);
+  }
+
+  return best;
 };
 
 console.log('=== LC #904 Fruit Into Baskets ===\n');
