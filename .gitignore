@@ -23,3 +23,6 @@ npm-debug.log*
 # Site build artifacts (site/.gitignore covers these too)
 site/.next/
 site/node_modules/
+
+# Claude Code memory
+memory/
