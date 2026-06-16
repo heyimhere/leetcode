@@ -1,91 +1,103 @@
 // TODO: implement
-// LC #215 — Kth Largest Element in an Array
+// LC #125 — Valid Palindrome
 //
-// Given an integer array `nums` and an integer k, return the kth LARGEST
-// element. Note: it's the kth largest in SORTED ORDER, NOT the kth distinct
-// element.
+// Given a string `s`, return true if it is a palindrome after:
+//   1. Removing all non-alphanumeric characters
+//   2. Lowercasing the rest
+// Otherwise return false.
+//
+// A palindrome reads the same forward and backward.
 //
 // Example:
-//   nums = [3,2,1,5,6,4], k = 2          → 5
-//   nums = [3,2,3,1,2,4,5,5,6], k = 4    → 4
+//   "A man, a plan, a canal: Panama"  → true   (becomes "amanaplanacanalpanama")
+//   "race a car"                       → false  (becomes "raceacar")
+//   " "                                → true   (empty string is trivially a palindrome)
+//   "0P"                               → false  ('0' vs 'p')
 //
-// Approach 1 (min-heap of size k):
-//   for n of nums:
-//     heap.push(n)
-//     if heap.size > k → heap.pop()    // pop the smallest
-//   return heap.peek()
+// Approach (two pointers — converging):
+//   left = 0, right = s.length - 1
+//   while left < right:
+//     skip non-alphanumeric on left  (left++)
+//     skip non-alphanumeric on right (right--)
+//     if lowercased s[left] !== lowercased s[right] → return false
+//     left++; right--
+//   return true
 //
-//   Maintains the top-k seen so far. At the end the min of those IS the
-//   kth largest overall.
+// Why two pointers:
+//   A palindrome's defining property is symmetry around the center.
+//   Pointers walking inward from both ends compare mirrored characters
+//   directly, so we never need extra space for a cleaned copy.
 //
-// Approach 2 (Quickselect — average O(n)):
-//   Partition around a pivot. If pivot's final index === n - k → return.
-//   Else recurse into the side that contains the kth largest.
+// Alternative (cleaner but more memory):
+//   Build a filtered+lowercased string, then compare against its reverse.
+//   O(n) time, O(n) space. The two-pointer version is O(1) space.
 //
-//   Worst case O(n²) with bad pivots; randomize for expected O(n).
+// Helper:
+//   const isAlphaNum = (c) =>
+//     (c >= 'a' && c <= 'z') ||
+//     (c >= 'A' && c <= 'Z') ||
+//     (c >= '0' && c <= '9');
 //
-// Approach 3 (Sort + index):
-//   nums.sort((a, b) => a - b); return nums[n - k]
-//   O(n log n) — simple but slower asymptotically than heap or quickselect.
+//   Using regex (`/[a-z0-9]/i.test(c)`) works too but is slower in tight loops.
 //
-// Time:
-//   - Approach 1: O(n log k)
-//   - Approach 2: O(n) average
-//   - Approach 3: O(n log n)
-// Space: O(k) heap; O(1) quickselect; O(1) sort
+// Time:  O(n)
+// Space: O(1)
 //
 // Edge Cases:
-//   - k = 1           → max element
-//   - k = n           → min element
-//   - Duplicates      → still counted by occurrence (NOT distinct-k)
-const MinHeap = require('utils/minHeap');
+//   - Empty string                  → true
+//   - All non-alphanumeric (",,,") → true (becomes empty)
+//   - Single character              → true
+//   - Mixed case ("Aa")             → true
+//   - Digits + letters ("0P")       → comparison is case-insensitive but
+//                                     '0' and 'p' are still different chars
 
 /**
- * @param {number[]} nums
- * @param {number} k
- * @returns {number}
+ * @param {string} s
+ * @returns {boolean}
  */
-const findKthLargestA = (nums, k) => {
+const isPalindrome = (s) => {
   // your code here
-  const minHeap = [];
-  for (let num of nums) {
-    minHeap.push(num);
-    minHeap.sort((a, b) => a - b);
-    if (minHeap.length > k) {
-      minHeap.shift();
-    }
+  const isAlphaNum = (c) => {
+    return /[a-z0-9]/i.test(c);
   }
-  return minHeap[0];
+  let left = 0;
+  let right = s.length - 1;
+
+  while (left < right) {
+    while (left < right && !isAlphaNum(s[left])) left++;
+    while (left < right && !isAlphaNum(s[right])) right--;
+    if (s[left].toLowerCase() !== s[right].toLowerCase()) return false;
+    left++;
+    right--;
+  }
+
+  return true;
 };
 
-const findKthLargest = (nums, k) => {
-  const heap = new MinHeap();
+// ============ Test Cases ============
 
-  for (let n of nums) {
-    heap.push(n);
-
-    if (heap.size > k) {
-      heap.pop();
-    }
-  }
-
-  return heap.peek();
-}
-
-console.log('=== LC #215 Kth Largest Element in Array ===\n');
+console.log('=== LC #125 Valid Palindrome ===\n');
 
 console.log('Test 1:');
-console.log(findKthLargest([3, 2, 1, 5, 6, 4], 2));
-// Expected: 5
+console.log(isPalindrome('A man, a plan, a canal: Panama'));
+// Expected: true
 
-console.log('\nTest 2 — duplicates count:');
-console.log(findKthLargest([3, 2, 3, 1, 2, 4, 5, 5, 6], 4));
-// Expected: 4
+console.log('\nTest 2:');
+console.log(isPalindrome('race a car'));
+// Expected: false
 
-console.log('\nTest 3 — k=1:');
-console.log(findKthLargest([1], 1));
-// Expected: 1
+console.log('\nTest 3 — empty after stripping:');
+console.log(isPalindrome(' '));
+// Expected: true
 
-console.log('\nTest 4 — k = n:');
-console.log(findKthLargest([7, 6, 5, 4, 3, 2, 1], 7));
-// Expected: 1
+console.log('\nTest 4 — digit vs letter:');
+console.log(isPalindrome('0P'));
+// Expected: false
+
+console.log('\nTest 5 — single char:');
+console.log(isPalindrome('a'));
+// Expected: true
+
+console.log('\nTest 6 — mixed alphanumerics:');
+console.log(isPalindrome('1a2'));
+// Expected: false
