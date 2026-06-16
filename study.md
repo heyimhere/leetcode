@@ -4,6 +4,56 @@ The goal isn't to memorize solutions — it's to internalize ~9 move archetypes 
 
 ---
 
+## Where to Spend Your Prep Time
+
+Rough frequencies aggregated from interview reports, LeetCode tag distributions, NeetCode/Blind 75, and company-specific lists. Not gospel — varies by company tier and role — but a defensible breakdown for breadth-first prep.
+
+### Pareto split — optimal effort allocation
+
+| Effort | Topics |
+|---|---|
+| **50%** | Arrays · Hashmaps · Two pointers · Sliding window · Strings |
+| **25%** | Trees · BFS/DFS (trees, grids, graphs) |
+| **15%** | Dynamic programming fundamentals · Binary search |
+| **10%** | Heap · Stack · Linked list · Backtracking · Tries · Bit manipulation · Intervals · Union-Find |
+
+### Frequency tiers
+
+**Tier 1 — show up in nearly every loop (60–80% of interviews)**
+- Arrays / Strings (~35–45% of pure DSA questions). Two pointers, sliding window, prefix sums are *array patterns*, not separate topics.
+- Hashmaps / Sets (~25–35% directly; higher when counting them as the sidekick to everything else).
+
+**Tier 2 — show up regularly at mid/senior loops (20–40%)**
+- Trees (binary trees, BSTs) (~15–20%). Heavy at FAANG. Traversals, level-order, LCA, path sums.
+- Graphs (~10–15%). BFS/DFS on grids is the most frequent variant. Heavy at Google/Meta/Amazon.
+- Dynamic Programming (~10–15% pure; more often disguised).
+
+**Tier 3 — situational (5–15%)**
+- Linked Lists (~5–10%). Heavy at phone screens, lighter at onsite.
+- Heaps / Priority Queues (~5–10%). Top-K and scheduling problems.
+- Stacks (~5–10%). Parens, monotonic stack, calculator.
+- Binary Search (~5–10%). Including binary-search-on-the-answer.
+
+**Tier 4 — rare but high-signal (<5%)**
+- Backtracking, Tries, Greedy, Intervals, Bit Manipulation, Union-Find.
+
+### The 10 universal patterns
+
+If you're fluent in these, you'll recognize 80%+ of interview problems regardless of surface topic:
+
+1. Hashmap for O(1) lookup
+2. Two pointers (and fast/slow variant)
+3. Sliding window
+4. BFS / DFS (trees, graphs, grids, implicit graphs)
+5. Binary search (sorted data, and answer space)
+6. Recursion + memoization (top-down DP)
+7. Monotonic stack
+8. Heap for top-K
+9. Backtracking template
+10. Topological sort
+
+---
+
 ## How to Use This Doc
 
 **Each session (45–60 min):**
