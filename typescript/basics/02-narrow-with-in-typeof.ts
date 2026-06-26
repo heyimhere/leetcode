@@ -23,11 +23,17 @@ export function area(value: Shape | string): number {
   // BUG: `value.length` doesn't exist on Circle/Rect
   // BUG: `value.radius` is only on Circle
   // BUG: `value.width` is only on Rect
-  return value.length ?? Math.PI * value.radius ** 2 ?? value.width * value.height;
+  if (typeof value === 'string') {
+    return value.length;
+  } else if ('radius' in value) {
+    return Math.PI * value.radius ** 2;
+  } else {
+    return value.width * value.height;
+  }
 }
 
 // ─── cases ─────────────────────────────────────────────────────────────
 type Case1 = Expect<Equal<ReturnType<typeof area>, number>>;
 type Case2 = Expect<Equal<Parameters<typeof area>[0], Shape | string>>;
 
-export {};
+export { };
