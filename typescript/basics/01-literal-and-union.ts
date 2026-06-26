@@ -14,8 +14,8 @@
 import type { Expect, Equal } from '../_helpers/assert';
 
 // ↓ Replace `any` with your answer
-type Role = any;
-type RoleCount = any;
+type Role = 'admin' | 'editor' | 'viewer';
+type RoleCount = [Role, Role, Role]['length'];
 
 // ─── cases ─────────────────────────────────────────────────────────────
 type Case1 = Expect<Equal<Role, 'admin' | 'editor' | 'viewer'>>;
@@ -24,4 +24,4 @@ type Case2 = Expect<Equal<RoleCount, 3>>;
 // A `Role` should NOT be assignable from an arbitrary string
 type Case3 = Expect<Equal<Extract<string, Role>, never>>;
 
-export {};
+export { };
