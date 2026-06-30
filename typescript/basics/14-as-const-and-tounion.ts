@@ -15,7 +15,7 @@
 import type { Expect, Equal } from '../_helpers/assert';
 
 // ↓ Replace with your answer
-type ToUnion<T extends readonly unknown[]> = any;
+type ToUnion<T extends readonly unknown[]> = T[number];
 
 // `as const` is required — without it, `ROLES` would be `string[]` and
 // `ToUnion<typeof ROLES>` would be just `string`.
@@ -28,4 +28,4 @@ type Case2 = Expect<Equal<ToUnion<[1, 2, 3]>, 1 | 2 | 3>>;
 type Case3 = Expect<Equal<ToUnion<[]>, never>>;
 type Case4 = Expect<Equal<ToUnion<readonly ['x']>, 'x'>>;
 
-export {};
+export { };
