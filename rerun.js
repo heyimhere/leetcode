@@ -1,46 +1,60 @@
-// LC #217 — Contains Duplicate
+// LC #242 — Valid Anagram
 //
-// Given an integer array nums, return true if any value appears at least
-// twice in the array, and return false if every element is distinct.
+// Given two strings s and t, return true if t is an anagram of s, and false
+// otherwise. An anagram is a rearrangement of the letters — same characters,
+// same counts, possibly different order.
 //
 // Examples:
-//   [1,2,3,1]             -> true
-//   [1,2,3,4]             -> false
-//   [1,1,1,3,3,4,3,2,4,2] -> true
+//   s = "anagram", t = "nagaram" -> true
+//   s = "rat",     t = "car"     -> false
+//   s = "a",       t = "ab"      -> false
 //
 // Intuition:
-//   Classic "have I seen this before?" problem — the archetype for a Set.
-//   Walk the array once; for each value, ask the Set if it's already there.
-//   If yes, we found a duplicate. If not, add it and keep going.
+//   Two strings are anagrams iff they have identical character-count
+//   histograms. So: count the letters of s, then walk t and decrement.
+//   If we ever try to decrement a letter that isn't there (or is already
+//   at zero), t has a letter s doesn't — not an anagram.
 //
-// Approach (Set, one pass):
-//   - seen = new Set()
-//   - for each n in nums: if seen.has(n) return true; else seen.add(n)
-//   - return false
-//   Time: O(n)   Space: O(n)
+//   Length shortcut: if lengths differ, they can't be anagrams. Bail early.
+//
+// Approach (single Map, two passes):
+//   - if s.length !== t.length return false
+//   - counts = new Map()
+//   - for each c in s: counts.set(c, (counts.get(c) ?? 0) + 1)
+//   - for each c in t:
+//       if !counts.has(c) or counts.get(c) === 0 return false
+//       counts.set(c, counts.get(c) - 1)
+//   - return true
+//   Time: O(n)   Space: O(k) where k = size of the alphabet
 //
 // Alternate approaches:
-//   1) One-liner: `new Set(nums).size !== nums.length`
-//      Same O(n)/O(n), but always scans the whole array — the loop can bail
-//      early on the first duplicate.
-//   2) Sort + scan adjacent pairs.
-//      Time: O(n log n)   Space: O(1) (ignoring sort's stack).
-//      Trade time for space when memory is tight.
+//   1) Sort both strings and compare.
+//      Time: O(n log n)   Space: O(n) (JS sort on arrays).
+//      One-liner-ish, but slower.
+//   2) Fixed-size int array of length 26 (lowercase-only inputs).
+//      Same O(n)/O(1) — the array replaces the Map and is a bit faster
+//      because array indexing beats Map hashing.
 
-const containsDuplicate = (nums) => {
-  const seen = new Set();
+const isAnagram = (s, t) => {
+  if (s.length !== t.length) return false;
 
-  for (let n of nums) {
-    if (seen.has(n)) return true;
+  const count = new Map();
 
-    seen.add(n);
+  for (let c of s) {
+    count.set(c, (count.get(c) ?? 0) + 1);
   }
 
-  return false;
+  for (let c of t) {
+    if (!count.has(c) || count.get(c) === 0) return false;
+    count.set(c, count.get(c) - 1);
+  }
+
+  return true;
 }
 
-console.log('[1,2,3,1]             ->', containsDuplicate([1, 2, 3, 1]));             // true
-console.log('[1,2,3,4]             ->', containsDuplicate([1, 2, 3, 4]));             // false
-console.log('[1,1,1,3,3,4,3,2,4,2] ->', containsDuplicate([1, 1, 1, 3, 3, 4, 3, 2, 4, 2])); // true
-console.log('[]                    ->', containsDuplicate([]));                        // false
-console.log('[7]                   ->', containsDuplicate([7]));                       // false
+console.log('"anagram","nagaram" ->', isAnagram('anagram', 'nagaram')); // true
+console.log('"rat","car"         ->', isAnagram('rat', 'car'));         // false
+console.log('"a","ab"            ->', isAnagram('a', 'ab'));            // false
+console.log('"",""               ->', isAnagram('', ''));               // true
+console.log('"aacc","ccac"       ->', isAnagram('aacc', 'ccac'));       // false
+console.log('"listen","silent"   ->', isAnagram('listen', 'silent'));   // true
