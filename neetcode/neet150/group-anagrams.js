@@ -77,17 +77,16 @@ console.log('["abc","bca","xyz","zyx","cab"] ->', groupAnagrams(['abc', 'bca', '
 // Same shape as groupAnagrams: build a signature per string, bucket in a
 // Map, return the buckets. Only the signature computation changes.
 // ---------------------------------------------------------------------------
-
 const groupAnagramsB = (strs) => {
   const groups = new Map();
 
   for (let s of strs) {
     const counts = new Array(26).fill(0);
     for (let c of s) counts[c.charCodeAt(0) - 97]++;
-    const key = counts.join(',');
+    const key = counts.join(',');  // ',' separator so [1,12] ≠ [11,2]
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(s);
   }
 
   return [...groups.values()];
-}
+};
