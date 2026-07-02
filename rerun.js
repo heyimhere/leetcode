@@ -1,56 +1,94 @@
-// LC #1 — Two Sum
+// LC #49 — Group Anagrams
 //
-// Given an array of integers nums and an integer target, return the indices
-// of the two numbers that add up to target. You may assume each input has
-// exactly one solution, and you may not use the same element twice.
+// Given an array of strings, group the anagrams together. Return the groups
+// in any order; strings inside each group may also appear in any order.
 //
 // Examples:
-//   nums = [2,7,11,15], target = 9  -> [0,1]  (2 + 7 = 9)
-//   nums = [3,2,4],     target = 6  -> [1,2]  (2 + 4 = 6)
-//   nums = [3,3],       target = 6  -> [0,1]  (3 + 3 = 6)
+//   ["eat","tea","tan","ate","nat","bat"]
+//     -> [["eat","tea","ate"], ["tan","nat"], ["bat"]]
+//   [""]         -> [[""]]
+//   ["a"]        -> [["a"]]
 //
 // Intuition:
-//   For each number n, the number we need is target - n (its "complement").
-//   Instead of scanning the array for that complement each time (O(n^2)),
-//   we remember every number we've already seen in a Map keyed by value
-//   with its index as the value. Then "have I seen the complement?" is O(1).
+//   Two strings are anagrams iff they contain the same letters. So if we
+//   turn each string into a *canonical form* that all its anagrams share —
+//   the same string, letter-for-letter — we can bucket by that canonical
+//   form in a Map. The buckets are the groups.
 //
-//   One pass is enough: by the time the second half of a valid pair shows
-//   up, its partner is already in the map. We never need to look ahead.
+//   The simplest canonical form is the string with its letters sorted:
+//     "eat" -> "aet"    "tea" -> "aet"    "ate" -> "aet"
+//   All anagrams collapse to the same sorted signature; non-anagrams don't.
 //
-// Approach (single-pass hashmap):
-//   - seen = new Map()          // value -> index
-//   - for i from 0 to nums.length - 1:
-//       need = target - nums[i]
-//       if seen.has(need) return [seen.get(need), i]
-//       seen.set(nums[i], i)
-//   - (problem guarantees a solution, so no fallthrough return is required
-//     for LeetCode, but we return [] here to be safe)
-//   Time: O(n)   Space: O(n)
+// Approach (sort-signature grouping):
+//   - groups = new Map()  // signature -> string[]
+//   - for each s in strs:
+//       key = sorted characters of s
+//       if !groups.has(key): groups.set(key, [])
+//       groups.get(key).push(s)
+//   - return [...groups.values()]
 //
 // Alternate approaches:
-//   1) Brute force: two nested loops.
-//      Time: O(n^2)   Space: O(1). Only reasonable for tiny inputs.
-//   2) Sort + two pointers.
-//      Time: O(n log n)   Space: O(n) — because sorting destroys the
-//      original indices, we'd need to attach indices before sorting.
-//      Slower than the hashmap and more fiddly. Useful when you only need
-//      the *values* (not indices) or when you can't afford O(n) extra space.
+//   1) Char-count signature: build a length-26 count array, join it as the
+//      key. Time: O(n · k)  Space: O(n · k). Asymptotically faster (no log
+//      factor) but relies on the alphabet being fixed-size (a-z) and uses
+//      charCodeAt tricks — harder to write from memory under pressure.
+//   2) Histogram Map serialized to a sorted "a:2,b:1" string. Works for any
+//      alphabet. Same O(n · k log k) as sorting because you still have to
+//      sort the keys to get a canonical order.
+//
+// Complexity of the chosen solution:
+//   Time:  O(n · k log k)  — n strings, each split into a char array and
+//                            sorted in O(k log k). Map has/set/get and
+//                            push are amortized O(1).
+//   Space: O(n · k)        — every input string is stored once across the
+//                            buckets, plus one k-length signature key per
+//                            bucket (at most n buckets).
+//
+// Reference variant (groupAnagramsB): count-signature version below. Kept
+// for scale — it's O(n · k) instead of O(n · k log k), which matters when
+// strings are long or inputs are huge. Same idea, just a different key.
 
-const twoSum = (nums, target) => {
-  const seen = new Map();
+const groupAnagrams = (strs) => {
+  const groups = new Map();
 
-  for (let i = 0; i < nums.length; i++) {
-    const need = target - nums[i];
-    if (seen.has(need)) return [seen.get(need), i];
-    seen.set(nums[i], i);
+  for (let s of strs) {
+    const key = s.split('').sort().join('');
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(s);
   }
 
-  return [];
-};
+  return [...groups.values()];
+}
 
-console.log('[2,7,11,15], 9 ->', twoSum([2, 7, 11, 15], 9)); // [0,1]
-console.log('[3,2,4],     6 ->', twoSum([3, 2, 4], 6));      // [1,2]
-console.log('[3,3],       6 ->', twoSum([3, 3], 6));         // [0,1]
-console.log('[-1,-2,-3,-4,-5], -8 ->', twoSum([-1, -2, -3, -4, -5], -8)); // [2,4]
-console.log('[0,4,3,0],   0 ->', twoSum([0, 4, 3, 0], 0));   // [0,3]
+console.log('["eat","tea","tan","ate","nat","bat"] ->', groupAnagrams(['eat', 'tea', 'tan', 'ate', 'nat', 'bat']));
+// [["eat","tea","ate"], ["tan","nat"], ["bat"]]
+console.log('[""]  ->', groupAnagrams(['']));         // [[""]]
+console.log('["a"] ->', groupAnagrams(['a']));        // [["a"]]
+console.log('["abc","bca","xyz","zyx","cab"] ->', groupAnagrams(['abc', 'bca', 'xyz', 'zyx', 'cab']));
+// [["abc","bca","cab"], ["xyz","zyx"]]
+
+// ---------------------------------------------------------------------------
+// Reference: char-count signature (faster at scale)
+//
+// Preferred when strings are long or n is huge — this is O(n · k) vs the
+// sort-based O(n · k log k). The tradeoff is a fixed-alphabet assumption
+// (lowercase a-z here) and the charCodeAt arithmetic for the index.
+//
+// Same shape as groupAnagrams: build a signature per string, bucket in a
+// Map, return the buckets. Only the signature computation changes.
+// ---------------------------------------------------------------------------
+
+const groupAnagramsB = (strs) => {
+  const groups = new Map();
+
+  for (let s of strs) {
+    const counts = new Array(26).fill(0);
+    for (let c of s) counts[c.charCodeAt(0) - 97]++;
+    const key = counts.join(',');
+
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(s);
+  }
+
+  return [...groups.values()];
+}
