@@ -34,6 +34,14 @@
 //   2) Fixed-size int array of length 26 (lowercase-only inputs).
 //      Same O(n)/O(1) — the array replaces the Map and is a bit faster
 //      because array indexing beats Map hashing.
+//
+// Complexity of the chosen solution:
+//   Time:  O(n)  — two linear passes (one over s, one over t), each doing
+//                  O(1) Map ops per character. Length check is O(1).
+//   Space: O(k)  — the Map holds at most k distinct characters, where k is
+//                  the alphabet size. For lowercase English, k ≤ 26 → O(1)
+//                  in practice; we say O(k) to stay honest about the general
+//                  case (e.g. Unicode inputs).
 
 const isAnagram = (s, t) => {
   if (s.length !== t.length) return false;
