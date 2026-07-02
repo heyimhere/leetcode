@@ -1,41 +1,46 @@
+// LC #217 — Contains Duplicate
+//
+// Given an integer array nums, return true if any value appears at least
+// twice in the array, and return false if every element is distinct.
+//
+// Examples:
+//   [1,2,3,1]             -> true
+//   [1,2,3,4]             -> false
+//   [1,1,1,3,3,4,3,2,4,2] -> true
+//
+// Intuition:
+//   Classic "have I seen this before?" problem — the archetype for a Set.
+//   Walk the array once; for each value, ask the Set if it's already there.
+//   If yes, we found a duplicate. If not, add it and keep going.
+//
+// Approach (Set, one pass):
+//   - seen = new Set()
+//   - for each n in nums: if seen.has(n) return true; else seen.add(n)
+//   - return false
+//   Time: O(n)   Space: O(n)
+//
+// Alternate approaches:
+//   1) One-liner: `new Set(nums).size !== nums.length`
+//      Same O(n)/O(n), but always scans the whole array — the loop can bail
+//      early on the first duplicate.
+//   2) Sort + scan adjacent pairs.
+//      Time: O(n log n)   Space: O(1) (ignoring sort's stack).
+//      Trade time for space when memory is tight.
 
-const findAnagrams = (a, b) => {
-  const need = new Map();
+const containsDuplicate = (nums) => {
+  const seen = new Set();
 
-  for (let each of b) {
-    need.set(each, (need.get(each) ?? 0) + 1);
+  for (let n of nums) {
+    if (seen.has(n)) return true;
+
+    seen.add(n);
   }
 
-  let left = 0;
-  const ans = [];
-  const window = new Map();
-  let matches = 0;
+  return false;
+}
 
-  for (let right = 0; right < a.length; right++) {
-    const c = a[right];
-
-    // add c to the window
-    window.set(c, (window.get(c) ?? 0) + 1);
-    if (need.has(c)) {
-      if (window.get(c) === need.get(c)) matches++;
-      else if (window.get(c) === need.get(c) + 1) matches--;
-    }
-
-    // shrink if the window grew past b.length
-    if (right - left + 1 > b.length) {
-      const d = a[left];
-      if (need.has(d)) {
-        if (window.get(d) === need.get(d)) matches--;
-        else if (window.get(d) === need.get(d) + 1) matches++;
-      }
-      window.set(d, window.get(d) - 1);
-      left++;
-    }
-
-    if (matches === need.size) ans.push(left);
-  }
-
-  return ans;
-};
-
-console.log('find anagrams', findAnagrams('cbaebabacd', 'abc'));
+console.log('[1,2,3,1]             ->', containsDuplicate([1, 2, 3, 1]));             // true
+console.log('[1,2,3,4]             ->', containsDuplicate([1, 2, 3, 4]));             // false
+console.log('[1,1,1,3,3,4,3,2,4,2] ->', containsDuplicate([1, 1, 1, 3, 3, 4, 3, 2, 4, 2])); // true
+console.log('[]                    ->', containsDuplicate([]));                        // false
+console.log('[7]                   ->', containsDuplicate([7]));                       // false
