@@ -36,6 +36,14 @@
 //      original indices, we'd need to attach indices before sorting.
 //      Slower than the hashmap and more fiddly. Useful when you only need
 //      the *values* (not indices) or when you can't afford O(n) extra space.
+//
+// Complexity of the chosen solution:
+//   Time:  O(n)  — single pass; per iteration we do a subtraction, one Map
+//                  has, and one Map set — all O(1) amortized. Early return
+//                  on the second half of the pair makes best case O(1).
+//   Space: O(n)  — worst case the pair isn't found until the last index, so
+//                  the Map ends up holding all n-1 prior (value, index)
+//                  entries.
 
 const twoSum = (nums, target) => {
   const seen = new Map();
@@ -45,6 +53,7 @@ const twoSum = (nums, target) => {
     if (seen.has(need)) return [seen.get(need), i];
     seen.set(nums[i], i);
   }
+
   return [];
 };
 

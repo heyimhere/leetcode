@@ -26,6 +26,12 @@
 //   2) Sort + scan adjacent pairs.
 //      Time: O(n log n)   Space: O(1) (ignoring sort's stack).
 //      Trade time for space when memory is tight.
+//
+// Complexity of the chosen solution:
+//   Time:  O(n)  — one pass through nums; each Set has/add is amortized O(1),
+//                  and we short-circuit on the first duplicate (best case O(1)).
+//   Space: O(n)  — the Set can hold up to n-1 distinct values in the worst
+//                  case (fully unique array, forces the full scan).
 
 const containsDuplicate = (nums) => {
   const seen = new Set();
