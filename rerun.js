@@ -1,41 +1,60 @@
+// LC #242 — Valid Anagram
+//
+// Given two strings s and t, return true if t is an anagram of s, and false
+// otherwise. An anagram is a rearrangement of the letters — same characters,
+// same counts, possibly different order.
+//
+// Examples:
+//   s = "anagram", t = "nagaram" -> true
+//   s = "rat",     t = "car"     -> false
+//   s = "a",       t = "ab"      -> false
+//
+// Intuition:
+//   Two strings are anagrams iff they have identical character-count
+//   histograms. So: count the letters of s, then walk t and decrement.
+//   If we ever try to decrement a letter that isn't there (or is already
+//   at zero), t has a letter s doesn't — not an anagram.
+//
+//   Length shortcut: if lengths differ, they can't be anagrams. Bail early.
+//
+// Approach (single Map, two passes):
+//   - if s.length !== t.length return false
+//   - counts = new Map()
+//   - for each c in s: counts.set(c, (counts.get(c) ?? 0) + 1)
+//   - for each c in t:
+//       if !counts.has(c) or counts.get(c) === 0 return false
+//       counts.set(c, counts.get(c) - 1)
+//   - return true
+//   Time: O(n)   Space: O(k) where k = size of the alphabet
+//
+// Alternate approaches:
+//   1) Sort both strings and compare.
+//      Time: O(n log n)   Space: O(n) (JS sort on arrays).
+//      One-liner-ish, but slower.
+//   2) Fixed-size int array of length 26 (lowercase-only inputs).
+//      Same O(n)/O(1) — the array replaces the Map and is a bit faster
+//      because array indexing beats Map hashing.
 
-const findAnagrams = (a, b) => {
-  const need = new Map();
+const isAnagram = (s, t) => {
+  if (s.length !== t.length) return false;
 
-  for (let each of b) {
-    need.set(each, (need.get(each) ?? 0) + 1);
+  const count = new Map();
+
+  for (let c of s) {
+    count.set(c, (count.get(c) ?? 0) + 1);
   }
 
-  let left = 0;
-  const ans = [];
-  const window = new Map();
-  let matches = 0;
-
-  for (let right = 0; right < a.length; right++) {
-    const c = a[right];
-
-    // add c to the window
-    window.set(c, (window.get(c) ?? 0) + 1);
-    if (need.has(c)) {
-      if (window.get(c) === need.get(c)) matches++;
-      else if (window.get(c) === need.get(c) + 1) matches--;
-    }
-
-    // shrink if the window grew past b.length
-    if (right - left + 1 > b.length) {
-      const d = a[left];
-      if (need.has(d)) {
-        if (window.get(d) === need.get(d)) matches--;
-        else if (window.get(d) === need.get(d) + 1) matches++;
-      }
-      window.set(d, window.get(d) - 1);
-      left++;
-    }
-
-    if (matches === need.size) ans.push(left);
+  for (let c of t) {
+    if (!count.has(c) || count.get(c) === 0) return false;
+    count.set(c, count.get(c) - 1);
   }
 
-  return ans;
-};
+  return true;
+}
 
-console.log('find anagrams', findAnagrams('cbaebabacd', 'abc'));
+console.log('"anagram","nagaram" ->', isAnagram('anagram', 'nagaram')); // true
+console.log('"rat","car"         ->', isAnagram('rat', 'car'));         // false
+console.log('"a","ab"            ->', isAnagram('a', 'ab'));            // false
+console.log('"",""               ->', isAnagram('', ''));               // true
+console.log('"aacc","ccac"       ->', isAnagram('aacc', 'ccac'));       // false
+console.log('"listen","silent"   ->', isAnagram('listen', 'silent'));   // true
