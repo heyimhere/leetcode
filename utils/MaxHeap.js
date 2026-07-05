@@ -3,6 +3,11 @@
 // Heap property: every parent is larger than its children.
 // Root (index 0) is always the maximum element.
 //
+// Accepts an optional comparator: cmp(a, b) < 0 means a has higher priority
+// (closer to root). Default: (a, b) => b - a (larger number = higher priority).
+// Pass a custom comparator to heap pairs, objects, etc.:
+//   new MaxHeap((a, b) => b[0] - a[0])  // order [freq, val] pairs by freq desc
+//
 // Mirror of MinHeap — same index math, same array layout, same O(log n)
 // operations. Only the comparisons flip:
 //   MinHeap bubbleUp:   stop when parent <= child   (parent already smaller)
@@ -22,8 +27,9 @@
 //   size       — number of elements    → O(1)
 
 class MaxHeap {
-  constructor() {
+  constructor(comparator = (a, b) => b - a) {
     this.heap = [];
+    this.cmp = comparator;
   }
 
   get size() {
@@ -54,7 +60,7 @@ class MaxHeap {
     let i = this.heap.length - 1;
     while (i > 0) {
       const parent = Math.floor((i - 1) / 2);
-      if (this.heap[parent] >= this.heap[i]) break;
+      if (this.cmp(this.heap[parent], this.heap[i]) <= 0) break;
       [this.heap[parent], this.heap[i]] = [this.heap[i], this.heap[parent]];
       i = parent;
     }
@@ -68,8 +74,8 @@ class MaxHeap {
       let largest = i;
       const left = 2 * i + 1;
       const right = 2 * i + 2;
-      if (left < n && this.heap[left] > this.heap[largest]) largest = left;
-      if (right < n && this.heap[right] > this.heap[largest]) largest = right;
+      if (left < n && this.cmp(this.heap[left], this.heap[largest]) < 0) largest = left;
+      if (right < n && this.cmp(this.heap[right], this.heap[largest]) < 0) largest = right;
       if (largest === i) break;
       [this.heap[largest], this.heap[i]] = [this.heap[i], this.heap[largest]];
       i = largest;

@@ -49,3 +49,18 @@ console.log('[1,2,3,4]             ->', containsDuplicate([1, 2, 3, 4]));       
 console.log('[1,1,1,3,3,4,3,2,4,2] ->', containsDuplicate([1, 1, 1, 3, 3, 4, 3, 2, 4, 2])); // true
 console.log('[]                    ->', containsDuplicate([]));                        // false
 console.log('[7]                   ->', containsDuplicate([7]));                       // false
+
+// ---------------------------------------------------------------------------
+// Reference: sort + adjacent scan — O(n log n) time, O(1) extra space
+//
+// Trade time for space: sort the array in-place so duplicates end up next to
+// each other, then one linear scan checks each adjacent pair. No extra data
+// structure needed. Mutates the input — worth noting in an interview.
+// ---------------------------------------------------------------------------
+const containsDuplicateB = (nums) => {
+  nums.sort((a, b) => a - b);
+  for (let i = 0; i < nums.length - 1; i++) {
+    if (nums[i] === nums[i + 1]) return true;
+  }
+  return false;
+};

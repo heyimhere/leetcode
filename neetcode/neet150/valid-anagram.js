@@ -66,3 +66,22 @@ console.log('"a","ab"            ->', isAnagram('a', 'ab'));            // false
 console.log('"",""               ->', isAnagram('', ''));               // true
 console.log('"aacc","ccac"       ->', isAnagram('aacc', 'ccac'));       // false
 console.log('"listen","silent"   ->', isAnagram('listen', 'silent'));   // true
+
+// ---------------------------------------------------------------------------
+// Reference: fixed-size array (faster in practice for lowercase a-z)
+//
+// Replaces the Map with a 26-slot int array — one slot per letter. Array
+// indexing is faster than Map hashing, and the array size is always O(1).
+// Tradeoff: only works for lowercase English letters (a-z). For Unicode or
+// arbitrary char sets, the Map version handles it correctly.
+// charCodeAt(0) - 97  maps 'a'→0, 'b'→1, … 'z'→25.
+// ---------------------------------------------------------------------------
+const isAnagramB = (s, t) => {
+  if (s.length !== t.length) return false;
+  const counts = new Array(26).fill(0);
+  for (let c of s) counts[c.charCodeAt(0) - 97]++;
+  for (let c of t) {
+    if (--counts[c.charCodeAt(0) - 97] < 0) return false;
+  }
+  return true;
+};
