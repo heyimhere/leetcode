@@ -1,37 +1,76 @@
+const isValidSudoku = (board) => {
+  const rows = new Array.from({ length: 9 }, () => new Set());
+  const cols = new Array.from({ length: 9 }, () => new Set());
+  const boxes = new Array.from({ length: 9 }, () => new Set());
 
-const productExceptSelf = (nums) => {
-  const n = nums.length;
-  const res = new Array(n);
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const val = board[r][c];
+      if (val === '.') continue;
 
-  res[0] = 1;
-  for (let i = 1; i < n; i++) res[i] = res[i - 1] * nums[i - 1];
+      const b = Math.floor(r / 3) * 3 + Math.floor(c / 3);
 
-  let right = 1;
-  for (let i = n - 1; i >= 0; i--) {
-    res[i] *= right;
-    right *= nums[i];
+      if (rows[r].has(val) || cols[c].has(val) || boxes[b].has(val)) {
+        return false;
+      }
+
+      rows[r].add(val);
+      cols[c].add(val);
+      boxes[b].add(val);
+    }
   }
-  return res;
+  return true;
+};
+
+const isValidSudokuB = (board) => {
+  const seen = new Set();
+
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const val = board[r][c];
+      if (val === '.') continue;
+
+      const b = Math.floor(r / 3) * 3 + Math.floor(c / 3);
+      const keys = [`r${r}:${val}`, `c${c}:${val}`, `b${b}:${val}`];
+
+      for (const k of keys) {
+        if (seen.has(k)) return false;
+
+        seen.add(val);
+      }
+    }
+  }
+  return true;
 }
 
-console.log('[1,2,3,4]        ->', productExceptSelf([1, 2, 3, 4]));          // [24, 12, 8, 6]
-console.log('[-1,1,0,-3,3]    ->', productExceptSelf([-1, 1, 0, -3, 3]));     // [0, 0, 9, 0, 0]
-console.log('[2,3]            ->', productExceptSelf([2, 3]));                // [3, 2]
-console.log('[0,0,2,3]        ->', productExceptSelf([0, 0, 2, 3]));          // [0, 0, 0, 0]
-console.log('[5]              ->', productExceptSelf([5]));                   // [1]  (empty product)
+const validBoard = [
+  ['5', '3', '.', '.', '7', '.', '.', '.', '.'],
+  ['6', '.', '.', '1', '9', '5', '.', '.', '.'],
+  ['.', '9', '8', '.', '.', '.', '.', '6', '.'],
+  ['8', '.', '.', '.', '6', '.', '.', '.', '3'],
+  ['4', '.', '.', '8', '.', '3', '.', '.', '1'],
+  ['7', '.', '.', '.', '2', '.', '.', '.', '6'],
+  ['.', '6', '.', '.', '.', '.', '2', '8', '.'],
+  ['.', '.', '.', '4', '1', '9', '.', '.', '5'],
+  ['.', '.', '.', '.', '8', '.', '.', '7', '9'],
+];
 
-const productExceptSelfTwoArrays = (nums) => {
-  const n = nums.length;
-  const prefix = new Array(n);
-  const suffix = new Array(n);
+// Same as validBoard but with an extra '8' at [0][0], colliding on the
+// column (already an 8 at [3][0]) AND the top-left 3x3 box.
+const invalidBoard = [
+  ['8', '3', '.', '.', '7', '.', '.', '.', '.'],
+  ['6', '.', '.', '1', '9', '5', '.', '.', '.'],
+  ['.', '9', '8', '.', '.', '.', '.', '6', '.'],
+  ['8', '.', '.', '.', '6', '.', '.', '.', '3'],
+  ['4', '.', '.', '8', '.', '3', '.', '.', '1'],
+  ['7', '.', '.', '.', '2', '.', '.', '.', '6'],
+  ['.', '6', '.', '.', '.', '.', '2', '8', '.'],
+  ['.', '.', '.', '4', '1', '9', '.', '.', '5'],
+  ['.', '.', '.', '.', '8', '.', '.', '7', '9'],
+];
 
-  prefix[0] = 1;
-  for (let i = 0; i < n; i++) prefix[i] = prefix[i - 1] * nums[i - 1];
+console.log(isValidSudoku(validBoard));    // true
+console.log(isValidSudoku(invalidBoard));  // false
 
-  suffix[n - 1] = 1;
-  for (let i = n - 2; i >= 0; i--) suffix[i] = suffix[i + 1] * nums[i + 1];
-
-  const res = new Array(n);
-  for (let i = 0; i < n; i++) res[i] = prefix[i] * suffix[i];
-  return res;
-}
+console.log(isValidSudokuB(validBoard));   // true
+console.log(isValidSudokuB(invalidBoard)); // false
