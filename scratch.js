@@ -1,76 +1,40 @@
-const isValidSudoku = (board) => {
-  const rows = new Array.from({ length: 9 }, () => new Set());
-  const cols = new Array.from({ length: 9 }, () => new Set());
-  const boxes = new Array.from({ length: 9 }, () => new Set());
+const longestConsecutive = (nums) => {
+  const set = new Set(nums);
+  let best = 0;
 
-  for (let r = 0; r < 9; r++) {
-    for (let c = 0; c < 9; c++) {
-      const val = board[r][c];
-      if (val === '.') continue;
+  for (let num of set) {
+    if (set.has(num - 1)) continue;
 
-      const b = Math.floor(r / 3) * 3 + Math.floor(c / 3);
-
-      if (rows[r].has(val) || cols[c].has(val) || boxes[b].has(val)) {
-        return false;
-      }
-
-      rows[r].add(val);
-      cols[c].add(val);
-      boxes[b].add(val);
+    let cur = num;
+    let len = 1;
+    while (set.has(cur + 1)) {
+      cur++;
+      len++;
     }
+
+    best = Math.max(best, len);
   }
-  return true;
-};
 
-const isValidSudokuB = (board) => {
-  const seen = new Set();
-
-  for (let r = 0; r < 9; r++) {
-    for (let c = 0; c < 9; c++) {
-      const val = board[r][c];
-      if (val === '.') continue;
-
-      const b = Math.floor(r / 3) * 3 + Math.floor(c / 3);
-      const keys = [`r${r}:${val}`, `c${c}:${val}`, `b${b}:${val}`];
-
-      for (const k of keys) {
-        if (seen.has(k)) return false;
-
-        seen.add(val);
-      }
-    }
-  }
-  return true;
+  return best;
 }
 
-const validBoard = [
-  ['5', '3', '.', '.', '7', '.', '.', '.', '.'],
-  ['6', '.', '.', '1', '9', '5', '.', '.', '.'],
-  ['.', '9', '8', '.', '.', '.', '.', '6', '.'],
-  ['8', '.', '.', '.', '6', '.', '.', '.', '3'],
-  ['4', '.', '.', '8', '.', '3', '.', '.', '1'],
-  ['7', '.', '.', '.', '2', '.', '.', '.', '6'],
-  ['.', '6', '.', '.', '.', '.', '2', '8', '.'],
-  ['.', '.', '.', '4', '1', '9', '.', '.', '5'],
-  ['.', '.', '.', '.', '8', '.', '.', '7', '9'],
-];
+const longestConsecutiveSort = (nums) => {
+  if (nums.length === 0) return 0;
 
-// Same as validBoard but with an extra '8' at [0][0], colliding on the
-// column (already an 8 at [3][0]) AND the top-left 3x3 box.
-const invalidBoard = [
-  ['8', '3', '.', '.', '7', '.', '.', '.', '.'],
-  ['6', '.', '.', '1', '9', '5', '.', '.', '.'],
-  ['.', '9', '8', '.', '.', '.', '.', '6', '.'],
-  ['8', '.', '.', '.', '6', '.', '.', '.', '3'],
-  ['4', '.', '.', '8', '.', '3', '.', '.', '1'],
-  ['7', '.', '.', '.', '2', '.', '.', '.', '6'],
-  ['.', '6', '.', '.', '.', '.', '2', '8', '.'],
-  ['.', '.', '.', '4', '1', '9', '.', '.', '5'],
-  ['.', '.', '.', '.', '8', '.', '.', '7', '9'],
-];
+  const sorted = [...nums].sort((a, b) => a - b);
+  let best = 1;
+  let cur = 1;
 
-console.log(isValidSudoku(validBoard));    // true
-console.log(isValidSudoku(invalidBoard));  // false
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i] === sorted[i - 1]) continue;
+    if (sorted[i] === sorted[i - 1] + 1) {
+      cur++;
+    } else {
+      cur = 1;
+    }
 
-console.log(isValidSudokuB(validBoard));   // true
-console.log(isValidSudokuB(invalidBoard)); // false
+    best = Math.max(best, cur);
+  }
+
+  return best;
+}
