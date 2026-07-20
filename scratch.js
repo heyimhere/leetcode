@@ -1,40 +1,21 @@
-const longestConsecutive = (nums) => {
-  const set = new Set(nums);
-  let best = 0;
+const isAlnum = (c) => /[a-z0-9]/i.test(c);
 
-  for (let num of set) {
-    if (set.has(num - 1)) continue;
+const validPalindrome = (s) => {
+  let l = 0;
+  let r = s.length - 1;
 
-    let cur = num;
-    let len = 1;
-    while (set.has(cur + 1)) {
-      cur++;
-      len++;
-    }
-
-    best = Math.max(best, len);
+  while (l < r) {
+    while (l < r && !isAlnum(s[l])) l++;
+    while (l < r && !isAlnum(s[r])) r--;
+    if (s[l].toLowerCase() !== s[r].toLowerCase()) return false;
+    l++;
+    r--;
   }
-
-  return best;
+  return true;
 }
 
-const longestConsecutiveSort = (nums) => {
-  if (nums.length === 0) return 0;
-
-  const sorted = [...nums].sort((a, b) => a - b);
-  let best = 1;
-  let cur = 1;
-
-  for (let i = 1; i < sorted.length; i++) {
-    if (sorted[i] === sorted[i - 1]) continue;
-    if (sorted[i] === sorted[i - 1] + 1) {
-      cur++;
-    } else {
-      cur = 1;
-    }
-
-    best = Math.max(best, cur);
-  }
-
-  return best;
-}
+console.log(validPalindrome("A man, a plan, a canal: Panama")); // true
+console.log(validPalindrome("race a car"));                     // false
+console.log(validPalindrome(" "));                              // true
+console.log(validPalindrome("0P"));                             // false
+console.log(validPalindrome("ab_a"));                           // true
