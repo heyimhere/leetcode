@@ -1,21 +1,21 @@
-const isAlnum = (c) => /[a-z0-9]/i.test(c);
-const validPalindrome = (s) => {
+const twoSum = (numbers, target) => {
   let l = 0;
-  let r = s.length - 1;
+  let r = numbers.length - 1;
 
   while (l < r) {
-    while (l < r && !isAlnum(s[l])) l++;
-    while (l < r && !isAlnum(s[r])) r--;
-    if (s[l].toLowerCase() !== s[r].toLowerCase()) return false;
-    l++;
-    r--;
+    const sum = numbers[l] + numbers[r];
+    if (sum === target) return [l + 1, r + 1];
+    if (sum < target) {
+      l++;
+    } else {
+      r--;
+    }
   }
+  return [];
+};
 
-  return true;
-}
-
-console.log(validPalindrome("A man, a plan, a canal: Panama")); // true
-console.log(validPalindrome("race a car"));                     // false
-console.log(validPalindrome(" "));                              // true
-console.log(validPalindrome("0P"));                             // false
-console.log(validPalindrome("ab_a"));                           // true
+console.log('[2,7,11,15], 9 ->', twoSum([2, 7, 11, 15], 9)); // [1,2]
+console.log('[2,3,4],     6 ->', twoSum([2, 3, 4], 6));       // [1,3]
+console.log('[-1,0],     -1 ->', twoSum([-1, 0], -1));        // [1,2]
+console.log('[1,2,3,4,4,9,56,90], 8 ->', twoSum([1, 2, 3, 4, 4, 9, 56, 90], 8)); // [4,5]
+console.log('[5,25,75], 100 ->', twoSum([5, 25, 75], 100));   // [2,3]
