@@ -1,32 +1,19 @@
-const trap = (height) => {
-  let l = 0;
-  let r = height.length - 1;
-  let leftMax = 0;
-  let rightMax = 0;
-  let total = 0;
+const maxProfit = (prices) => {
+  let minPrice = Infinity;
+  let maxProfit = 0;
 
-  while (l < r) {
-    if (height[l] < height[r]) {
-      if (height[l] >= leftMax) {
-        leftMax = height[l];
-      } else {
-        total += leftMax - height[l];
-      }
-      l++;
+  for (const p of prices) {
+    if (p < minPrice) {
+      minPrice = p;
     } else {
-      if (height[r] >= rightMax) {
-        rightMax = height[r];
-      } else {
-        total += rightMax - height[r];
-      }
-      r--;
+      maxProfit = Math.max(maxProfit, p - minPrice);
     }
   }
-  return total;
+  return maxProfit;
 }
 
-console.log('[0,1,0,2,1,0,1,3,2,1,2,1] ->', trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1])); // 6
-console.log('[4,2,0,3,2,5]             ->', trap([4, 2, 0, 3, 2, 5]));                     // 9
-console.log('[4,2,3]                   ->', trap([4, 2, 3]));                              // 1
-console.log('[2,0,2]                   ->', trap([2, 0, 2]));                              // 2
-console.log('[]                        ->', trap([]));                                     // 0
+console.log('[7,1,5,3,6,4] ->', maxProfit([7, 1, 5, 3, 6, 4])); // 5
+console.log('[7,6,4,3,1]   ->', maxProfit([7, 6, 4, 3, 1]));     // 0
+console.log('[1,2]         ->', maxProfit([1, 2]));              // 1
+console.log('[2,4,1]       ->', maxProfit([2, 4, 1]));           // 2
+console.log('[3,3,3]       ->', maxProfit([3, 3, 3]));           // 0
