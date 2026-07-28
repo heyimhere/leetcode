@@ -1,19 +1,22 @@
-const maxProfit = (prices) => {
-  let minPrice = Infinity;
-  let maxProfit = 0;
+const lengthofLongestSubstring = (s) => {
+  const seen = new Set();
+  let left = 0;
+  let best = 0;
 
-  for (let p of prices) {
-    if (p < minPrice) {
-      minPrice = p;
-    } else {
-      maxProfit = Math.max(maxProfit, p - minPrice);
+  for (let right = 0; right < s.length; right++) {
+    while (seen.has(s[right])) {
+      seen.delete(s[left]);
+      left++;
     }
+    seen.add(s[right]);
+    best = Math.max(best, right - left + 1);
   }
-  return maxProfit;
+  return best;
 }
 
-console.log('[7,1,5,3,6,4] ->', maxProfit([7, 1, 5, 3, 6, 4])); // 5
-console.log('[7,6,4,3,1]   ->', maxProfit([7, 6, 4, 3, 1]));     // 0
-console.log('[1,2]         ->', maxProfit([1, 2]));              // 1
-console.log('[2,4,1]       ->', maxProfit([2, 4, 1]));           // 2
-console.log('[3,3,3]       ->', maxProfit([3, 3, 3]));           // 0
+console.log('"abcabcbb" ->', lengthOfLongestSubstring('abcabcbb')); // 3
+console.log('"bbbbb"    ->', lengthOfLongestSubstring('bbbbb'));    // 1
+console.log('"pwwkew"   ->', lengthOfLongestSubstring('pwwkew'));   // 3
+console.log('""         ->', lengthOfLongestSubstring(''));         // 0
+console.log('"au"       ->', lengthOfLongestSubstring('au'));       // 2
+console.log('"dvdf"     ->', lengthOfLongestSubstring('dvdf'));     // 3
