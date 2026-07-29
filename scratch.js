@@ -1,29 +1,39 @@
+const checkInclusion = (s1, s2) => {
+  if (s1.length > s2.length) return false;
+  const need = new Map();
+  const k = s1.length;
 
-const characterReplacement = (s, k) => {
-  const count = new Map();
-  let left = 0;
-  let maxFreq = 0;
-  let best = 0;
-
-  for (let right = 0; right < s.length; right++) {
-    const c = s[right];
-    count.set(c, (count.get(c) ?? 0) + 1);
-    maxFreq = Math.max(maxFreq, count.get(c));
-
-    if (right - left + 1 - maxFreq > k) {
-      const leftChar = s[left];
-      count.set(leftChar, count.get(leftChar) - 1);
-      left++;
-    }
-
-    best = Math.max(best, right - left + 1);
+  for (const c of s1) {
+    need.set(c, (need.get(c) ?? 0) + 1);
   }
 
-  return best;
+  const window = new Map();
+
+  const matches = () => {
+    for (const [c, cnt] of need) {
+      if ((window.get(c) ?? 0) !== cnt) return false;
+    }
+    return true;
+  }
+
+  for (let right = 0; right < s2.length; right++) {
+    const cIn = s2[right];
+    window.set(cIn, (window.get(cIn) ?? 0) + 1);
+
+    if (right >= k) {
+      const cOut = s2[right - k];
+      window.set(cOut, window.get(cOut) - 1);
+    }
+
+    if (right >= k - 1 && matches()) {
+      return true;
+    }
+  }
+  return false;
 }
 
-console.log('"ABAB", 2    ->', characterReplacement('ABAB', 2));    // 4
-console.log('"AABABBA", 1 ->', characterReplacement('AABABBA', 1)); // 4
-console.log('"AAAA", 0    ->', characterReplacement('AAAA', 0));    // 4
-console.log('"ABCDE", 1   ->', characterReplacement('ABCDE', 1));   // 2
-console.log('"", 2        ->', characterReplacement('', 2));        // 0
+console.log('"ab","eidbaooo"  ->', checkInclusion('ab', 'eidbaooo')); // true
+console.log('"ab","eidboaoo"  ->', checkInclusion('ab', 'eidboaoo')); // false
+console.log('"a","ab"         ->', checkInclusion('a', 'ab'));        // true
+console.log('"adc","dcda"     ->', checkInclusion('adc', 'dcda'));    // true
+console.log('"abc","ab"       ->', checkInclusion('abc', 'ab'));      // false
