@@ -1,49 +1,27 @@
-const minWindow = (s, t) => {
-  if (t.length === 0 || s.length < t.length) return '';
+const maxSlidingWindow = (nums, k) => {
+  const dq = [];
+  const res = [];
 
-  const need = new Map();
-  for (const c of t) {
-    need.set(c, (need.get(c) ?? 0) + 1);
-  }
-
-  const window = new Map();
-  const required = need.size;
-  let formed = 0;
-  let left = 0;
-
-  let bestLen = Infinity;
-  let bestStart = 0;
-
-  for (let right = 0; right < s.length; right++) {
-    const cIn = s[right];
-    window.set(cIn, (window.get(cIn) ?? 0) + 1);
-
-    if (need.has(cIn) && window.get(cIn) === need.get(cIn)) {
-      formed++;
+  for (let i = 0; i < nums.length; i++) {
+    if (dq.length && dq[0] <= i - k) {
+      dq.shift();
     }
 
-    while (formed === required) {
-      if (right - left + 1 < bestLen) {
-        bestLen = right - left + 1;
-        bestStart = left;
-      }
+    while (dq.length && nums[dq[dq.length - 1]] <= nums[i]) {
+      dq.pop();
+    }
 
-      const cOut = s[left];
-      window.set(cOut, window.get(cOut) - 1);
+    dq.push(i);
 
-      if (need.has(cOut) && window.get(cOut) < need.get(cOut)) {
-        formed--;
-      }
-
-      left++;
+    if (i >= k - 1) {
+      res.push(nums[dq[0]]);
     }
   }
 
-  return bestLen === Infinity ? '' : s.slice(bestStart, bestStart + bestLen);
+  return res;
 }
 
-console.log('"ADOBECODEBANC","ABC" ->', minWindow('ADOBECODEBANC', 'ABC')); // "BANC"
-console.log('"a","a"               ->', minWindow('a', 'a'));               // "a"
-console.log('"a","aa"              ->', minWindow('a', 'aa'));              // ""
-console.log('"a","b"               ->', minWindow('a', 'b'));               // ""
-console.log('"ab","b"              ->', minWindow('ab', 'b'));              // "b"
+console.log('[1,3,-1,-3,5,3,6,7], k=3 ->', maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3)); // [3,3,5,5,6,7]
+console.log('[1], k=1                 ->', maxSlidingWindow([1], 1));        // [1]
+console.log('[9,11], k=2              ->', maxSlidingWindow([9, 11], 2));    // [11]
+console.log('[4,-2], k=2              ->', maxSlidingWindow([4, -2], 2));    // [4]
