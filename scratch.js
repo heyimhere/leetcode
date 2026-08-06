@@ -1,20 +1,31 @@
-const dailyTemperatures = (temperatures) => {
-  const n = temperatures.length;
-  const answer = new Array(n).fill(0);
+const evalRPN = (tokens) => {
   const stack = [];
+  const operators = new Set(['+', '-', '*', '/']);
 
-  for (let i = 0; i < n; i++) {
-    while (stack.length > 0 && temperatures[i] > temperatures[stack[stack.length - 1]]) {
-      const j = stack.pop();
-      answer[j] = i - j;
+  for (const token of tokens) {
+    if (!operators.has(token)) {
+      stack.push(Number(token));
+      continue;
     }
-    stack.push(i);
+
+    const right = stack.pop();
+    const left = stack.pop();
+
+    if (token === '+') {
+      stack.push(left + right);
+    } else if (token === '-') {
+      stack.push(left - right);
+    } else if (token === '*') {
+      stack.push(left * right);
+    } else {
+      stack.push(Math.trunc(left / right));
+    }
   }
 
-  return answer;
+  return stack[0];
 };
 
-console.log('[73,74,75,71,69,72,76,73] ->', dailyTemperatures([73, 74, 75, 71, 69, 72, 76, 73])); // [1,1,4,2,1,1,0,0]
-console.log('[30,40,50,60]             ->', dailyTemperatures([30, 40, 50, 60]));                   // [1,1,1,0]
-console.log('[30,60,90]                ->', dailyTemperatures([30, 60, 90]));                        // [1,1,0]
-console.log('[90,80,70]                ->', dailyTemperatures([90, 80, 70]));                        // [0,0,0]
+console.log('["2","1","+","3","*"]       ->', evalRPN(['2', '1', '+', '3', '*'])); // 9
+console.log('["4","13","5","/","+"]          ->', evalRPN(['4', '13', '5', '/', '+'])); // 6
+console.log('["10","6","9","3","+","-11","*","/","*","17","+","5","+"] ->', evalRPN(['10', '6', '9', '3', '+', '-11', '*', '/', '*', '17', '+', '5', '+'])); // 22
+console.log('["-13","5","/"]                ->', evalRPN(['-13', '5', '/'])); // -2
