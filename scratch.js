@@ -1,37 +1,38 @@
-class MinStack {
-  constructor() {
-    this.stack = [];
-    this.minStack = [];
-  }
+const carFleet = (target, position, speed) => {
+  const cars = position.map((pos, i) => [pos, speed[i]]);
+  cars.sort((a, b) => b[0] - a[0]);
 
-  push(val) {
-    this.stack.push(val);
-    if (this.minStack.length === 0) {
-      this.minStack.push(val);
-    } else {
-      this.minStack.push(Math.min(val, this.minStack[this.minStack.length - 1]));
+  const stack = [];
+
+  for (const [pos, spd] of cars) {
+    const time = (target - pos) / spd;
+    if (stack.length === 0 || time > stack[stack.length - 1]) {
+      stack.push(time);
     }
   }
 
-  pop() {
-    this.stack.pop();
-    this.minStack.pop();
-  }
-
-  top() {
-    return this.stack[this.stack.length - 1];
-  }
-
-  getMin() {
-    return this.minStack[this.minStack.length - 1];
-  }
+  return stack.length;
 };
 
-const s = new MinStack();
-s.push(-2);
-s.push(0);
-s.push(-3);
-console.log('getMin ->', s.getMin()); // -3
-s.pop();
-console.log('top    ->', s.top());    // 0
-console.log('getMin ->', s.getMin()); // -2
+const carFleetB = (target, position, speed) => {
+  const cars = position.map((pos, i) => [pos, speed[i]]);
+  cars.sort((a, b) => b[0] - a[0]);
+
+  let fleets = 0;
+  let slowest = 0;
+
+  for (const [pos, spd] of cars) {
+    const time = (target - pos) / spd;
+    if (time > slowest) {
+      fleets++;
+      slowest = time;
+    }
+  }
+
+  return fleets;
+}
+
+console.log('12,[10,8,0,5,3],[2,4,1,1,3] ->', carFleet(12, [10, 8, 0, 5, 3], [2, 4, 1, 1, 3])); // 3
+console.log('10,[3],[3]                  ->', carFleet(10, [3], [3]));                            // 1
+console.log('100,[0,2,4],[4,2,1]         ->', carFleet(100, [0, 2, 4], [4, 2, 1]));              // 1
+console.log('(B) 12,[10,8,0,5,3],...     ->', carFleetB(12, [10, 8, 0, 5, 3], [2, 4, 1, 1, 3])); // 3
