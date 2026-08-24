@@ -9,6 +9,7 @@ easy/          arrays, strings, hashmaps, linked-lists, trees, dp, bit-manipulat
 medium/        arrays, strings, two-pointer, hashmap, linked-list, dp, binary-search, sliding-window
 hard/          arrays, hashmap, linked-lists
 neetcode/      NeetCode roadmap problems organized by pattern
+interview-essentials/  100 blank problems for daily reps — no solutions
 article-practice/  graph traversal, linked lists, trees
 random/        utility challenges (flatten objects, rotate matrices, etc.)
 coderbyte/     CodeByte string/algorithm challenges
@@ -19,6 +20,7 @@ Reference docs:
 - `practice-problems.md` — algorithm pattern templates with pseudocode and walkthroughs
 - `study.md` — personal study notes
 - `rerun.js` — current problem in progress (blank slate to practice from)
+- `interview-essentials/README.md` — checklist of the 100 daily-rep problems
 
 ## Running a Problem
 

@@ -1,38 +1,30 @@
-const carFleet = (target, position, speed) => {
-  const cars = position.map((pos, i) => [pos, speed[i]]);
-  cars.sort((a, b) => b[0] - a[0]);
-
+const largestRectangleArea = (heights) => {
   const stack = [];
+  let maxArea = 0;
 
-  for (const [pos, spd] of cars) {
-    const time = (target - pos) / spd;
-    if (stack.length === 0 || time > stack[stack.length - 1]) {
-      stack.push(time);
+  for (let i = 0; i < heights.length; i++) {
+    const h = heights[i];
+    let start = i;
+
+    while (stack.length > 0 && stack[stack.length - 1][1] > h) {
+      const [idx, height] = stack.pop();
+      maxArea = Math.max(maxArea, height * (i - idx));
+      start = idx;
     }
+
+    stack.push([start, h]);
   }
 
-  return stack.length;
-};
-
-const carFleetB = (target, position, speed) => {
-  const cars = position.map((pos, i) => [pos, speed[i]]);
-  cars.sort((a, b) => b[0] - a[0]);
-
-  let fleets = 0;
-  let slowest = 0;
-
-  for (const [pos, spd] of cars) {
-    const time = (target - pos) / spd;
-    if (time > slowest) {
-      fleets++;
-      slowest = time;
-    }
+  const n = heights.length;
+  for (const [idx, height] of stack) {
+    maxArea = Math.max(maxArea, height * (n - idx));
   }
 
-  return fleets;
-};
+  return maxArea;
+}
 
-console.log('12,[10,8,0,5,3],[2,4,1,1,3] ->', carFleet(12, [10, 8, 0, 5, 3], [2, 4, 1, 1, 3])); // 3
-console.log('10,[3],[3]                  ->', carFleet(10, [3], [3]));                            // 1
-console.log('100,[0,2,4],[4,2,1]         ->', carFleet(100, [0, 2, 4], [4, 2, 1]));              // 1
-console.log('(B) 12,[10,8,0,5,3],...     ->', carFleetB(12, [10, 8, 0, 5, 3], [2, 4, 1, 1, 3])); // 3
+console.log('[2,1,5,6,2,3] ->', largestRectangleArea([2, 1, 5, 6, 2, 3])); // 10
+console.log('[2,4]         ->', largestRectangleArea([2, 4]));             // 4
+console.log('[2,1,2]       ->', largestRectangleArea([2, 1, 2]));         // 3
+console.log('[1,1,1,1]     ->', largestRectangleArea([1, 1, 1, 1]));      // 4
+console.log('[5]           ->', largestRectangleArea([5]));               // 5
