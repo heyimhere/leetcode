@@ -1,37 +1,25 @@
-// LeetCode #242 — Valid Anagram
-//
-// Given two strings s and t, return true if t is an anagram of s, and false
-// otherwise.
-//
-// An anagram is a word or phrase formed by rearranging the letters of a
-// different word or phrase, typically using all the original letters exactly
-// once.
+const search = (nums, target) => {
+  let l = 0;
+  let r = nums.length - 1;
 
-const isAnagram = (s, t) => {
-  if (s.length !== t.length) return false;
+  while (l <= r) {
+    const mid = l + Math.floor((r - l) / 2);
 
-  const need = new Map();
-  for (let char of s) {
-    need.set(char, (need.get(char) ?? 0) + 1);
-  }
+    if (nums[mid] === target) return mid;
 
-  for (let char of t) {
-    if (need.has(char)) {
-      need.set(char, need.get(char) - 1);
+    if (nums[mid] < target) {
+      l = mid + 1;
+    } else {
+      r = mid - 1;
     }
   }
 
-  for (let [char, count] of need) {
-    if (count < 0 || count > 0) {
-      return false;
-    }
-  }
+  return -1;
+}
 
-  return true;
-};
+console.log('[-1,0,3,5,9,12], 9  ->', search([-1, 0, 3, 5, 9, 12], 9));  // 4
+console.log('[-1,0,3,5,9,12], 2  ->', search([-1, 0, 3, 5, 9, 12], 2));  // -1
+console.log('[5],              5  ->', search([5], 5));                    // 0
+console.log('[2,4,6,8,10],     2  ->', search([2, 4, 6, 8, 10], 2));      // 0
+console.log('[2,4,6,8,10],    10  ->', search([2, 4, 6, 8, 10], 10));     // 4
 
-console.log('"anagram", "nagaram" ->', isAnagram('anagram', 'nagaram')); // true
-console.log('"rat", "car"         ->', isAnagram('rat', 'car')); // false
-console.log('"a", "ab"            ->', isAnagram('a', 'ab')); // false
-console.log('"", ""               ->', isAnagram('', '')); // true
-console.log('"aacc", "ccac"       ->', isAnagram('aacc', 'ccac')); // false
