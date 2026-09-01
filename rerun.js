@@ -1,26 +1,37 @@
-// LeetCode #217 — Contains Duplicate
+// LeetCode #242 — Valid Anagram
 //
-// Given an integer array nums, return true if any value appears at least
-// twice in the array, and return false if every element is distinct.
+// Given two strings s and t, return true if t is an anagram of s, and false
+// otherwise.
+//
+// An anagram is a word or phrase formed by rearranging the letters of a
+// different word or phrase, typically using all the original letters exactly
+// once.
 
-const containsDuplicate = (nums) => {
-  const seen = new Set();
+const isAnagram = (s, t) => {
+  if (s.length !== t.length) return false;
 
-  for (let i = 0; i < nums.length; i++) {
-    const num = nums[i];
-
-    if (seen.has(num)) {
-      return true;
-    }
-
-    seen.add(num);
+  const need = new Map();
+  for (let char of s) {
+    need.set(char, (need.get(char) ?? 0) + 1);
   }
 
-  return false;
+  for (let char of t) {
+    if (need.has(char)) {
+      need.set(char, need.get(char) - 1);
+    }
+  }
+
+  for (let [char, count] of need) {
+    if (count < 0 || count > 0) {
+      return false;
+    }
+  }
+
+  return true;
 };
 
-console.log('[1,2,3,1]              ->', containsDuplicate([1, 2, 3, 1])); // true
-console.log('[1,2,3,4]              ->', containsDuplicate([1, 2, 3, 4])); // false
-console.log('[1,1,1,3,3,4,3,2,4,2] ->', containsDuplicate([1, 1, 1, 3, 3, 4, 3, 2, 4, 2])); // true
-console.log('[]                     ->', containsDuplicate([])); // false
-console.log('[7]                    ->', containsDuplicate([7])); // false
+console.log('"anagram", "nagaram" ->', isAnagram('anagram', 'nagaram')); // true
+console.log('"rat", "car"         ->', isAnagram('rat', 'car')); // false
+console.log('"a", "ab"            ->', isAnagram('a', 'ab')); // false
+console.log('"", ""               ->', isAnagram('', '')); // true
+console.log('"aacc", "ccac"       ->', isAnagram('aacc', 'ccac')); // false
