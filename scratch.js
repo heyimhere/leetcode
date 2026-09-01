@@ -1,23 +1,25 @@
-const isAnagram = (s, t) => {
-  if (s.length !== t.length) return false;
+const search = (nums, target) => {
+  let l = 0;
+  let r = nums.length - 1;
 
-  const need = new Map();
+  while (l <= r) {
+    const mid = l + Math.floor((r - l) / 2);
 
-  for (let char of s) {
-    need.set(char, (need.get(char) ?? 0) + 1);
+    if (nums[mid] === target) return mid;
+
+    if (nums[mid] < target) {
+      l = mid + 1;
+    } else {
+      r = mid - 1;
+    }
   }
 
-  for (let char of t) {
-    if (!need.has(char) || need.get(char) === 0) return false;
-
-    need.set(char, need.get(char) - 1);
-  }
-
-  return true;
+  return -1;
 };
 
-console.log('"anagram", "nagaram" ->', isAnagram('anagram', 'nagaram')); // true
-console.log('"rat", "car"         ->', isAnagram('rat', 'car')); // false
-console.log('"a", "ab"            ->', isAnagram('a', 'ab')); // false
-console.log('"", ""               ->', isAnagram('', '')); // true
-console.log('"aacc", "ccac"       ->', isAnagram('aacc', 'ccac')); // false
+console.log('[-1,0,3,5,9,12], 9  ->', search([-1, 0, 3, 5, 9, 12], 9));  // 4
+console.log('[-1,0,3,5,9,12], 2  ->', search([-1, 0, 3, 5, 9, 12], 2));  // -1
+console.log('[5],              5  ->', search([5], 5));                    // 0
+console.log('[2,4,6,8,10],     2  ->', search([2, 4, 6, 8, 10], 2));      // 0
+console.log('[2,4,6,8,10],    10  ->', search([2, 4, 6, 8, 10], 10));     // 4
+
